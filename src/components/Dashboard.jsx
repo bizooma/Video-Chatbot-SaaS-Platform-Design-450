@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../contexts/AuthContext';
@@ -8,18 +8,43 @@ import SafeIcon from '../common/SafeIcon';
 import VideoUpload from './VideoUpload';
 import ChatbotSettings from './ChatbotSettings';
 import ChatbotCustomization from './ChatbotCustomization';
+import ChatbotTraining from './ChatbotTraining';
 import ScriptGenerator from './ScriptGenerator';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import ChatbotPreview from './ChatbotPreview';
 import AccountManagement from './AccountManagement';
+import VolunteerManagement from './VolunteerManagement';
+import {getVolunteers} from '../services/volunteerService';
 
-const {FiUser,FiSettings,FiVideo,FiMessageCircle,FiCode,FiBarChart3,FiEye,FiLogOut,FiPlus,FiPalette}=FiIcons;
+const {FiUser,FiSettings,FiVideo,FiMessageCircle,FiCode,FiBarChart3,FiEye,FiLogOut,FiPlus,FiPalette,FiUsers,FiBrain}=FiIcons;
 
 const Dashboard=()=> {
   const [activeTab,setActiveTab]=useState('overview');
   const {user,logout}=useAuth();
   const {chatbots,selectedChatbot,setSelectedChatbot,createChatbot}=useChatbot();
   const navigate=useNavigate();
+  const [volunteers,setVolunteers]=useState([]);
+  const [isLoadingVolunteers,setIsLoadingVolunteers]=useState(false);
+
+  useEffect(()=> {
+    // Load volunteers data when dashboard mounts
+    if (user) {
+      loadVolunteers();
+    }
+  },[user]);
+
+  const loadVolunteers=async ()=> {
+    if (!user) return;
+    try {
+      setIsLoadingVolunteers(true);
+      const volunteersData=await getVolunteers();
+      setVolunteers(volunteersData || []);
+    } catch (error) {
+      console.error('Failed to load volunteers:',error);
+    } finally {
+      setIsLoadingVolunteers(false);
+    }
+  };
 
   const handleLogout=()=> {
     logout();
@@ -36,13 +61,15 @@ const Dashboard=()=> {
     setSelectedChatbot(newBot);
   };
 
-  const tabs=[
+  const tabs=[ 
     {id: 'overview',label: 'Overview',icon: FiSettings},
     {id: 'video',label: 'Video Upload',icon: FiVideo},
     {id: 'settings',label: 'Bot Settings',icon: FiMessageCircle},
+    {id: 'training',label: 'AI Training',icon: FiBrain},
     {id: 'customization',label: 'Customization',icon: FiPalette},
     {id: 'script',label: 'Integration',icon: FiCode},
     {id: 'analytics',label: 'Analytics',icon: FiBarChart3},
+    {id: 'volunteers',label: 'Volunteers',icon: FiUsers},
     {id: 'preview',label: 'Preview',icon: FiEye},
     {id: 'account',label: 'Account',icon: FiUser}
   ];
@@ -59,9 +86,9 @@ const Dashboard=()=> {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <img 
-                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" 
-                alt="NPO Bots Logo" 
+              <img
+                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png"
+                alt="NPO Bots Logo"
                 className="h-14 w-auto"
               />
               <div>
@@ -69,7 +96,6 @@ const Dashboard=()=> {
                 <p className="text-sm text-gray-600">Welcome back,{user.name}</p>
               </div>
             </div>
-
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <SafeIcon icon={FiUser} className="text-gray-500" />
@@ -100,7 +126,6 @@ const Dashboard=()=> {
                   <SafeIcon icon={FiPlus} className="text-sm" />
                 </button>
               </div>
-
               <div className="space-y-2">
                 {chatbots.length===0 ? (
                   <div className="text-center py-8 text-gray-500">
@@ -114,14 +139,17 @@ const Dashboard=()=> {
                       key={bot.id}
                       onClick={()=> setSelectedChatbot(bot)}
                       className={`w-full text-left p-3 rounded-lg transition-colors ${
-                        selectedChatbot?.id===bot.id 
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200' 
+                        selectedChatbot?.id===bot.id
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       <div className="font-medium">{bot.name}</div>
                       <div className="text-sm text-gray-500">
                         {bot.video ? 'Video configured' : 'No video'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {bot.isAiTrained ? '🧠 AI Trained' : '⚙️ Basic'}
                       </div>
                       <div className="text-xs text-gray-400 mt-1">
                         ID: {bot.id}
@@ -140,13 +168,18 @@ const Dashboard=()=> {
                     key={tab.id}
                     onClick={()=> setActiveTab(tab.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                      activeTab===tab.id 
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200' 
+                      activeTab===tab.id
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <SafeIcon icon={tab.icon} className="text-lg" />
                     <span className="font-medium">{tab.label}</span>
+                    {tab.id === 'training' && selectedChatbot?.isAiTrained && (
+                      <span className="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                        Trained
+                      </span>
+                    )}
                   </button>
                 ))}
               </nav>
@@ -164,7 +197,6 @@ const Dashboard=()=> {
               {activeTab==='overview' && (
                 <div className="bg-white rounded-xl shadow-sm p-8">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h2>
-                  
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="bg-blue-50 rounded-lg p-6">
                       <div className="flex items-center justify-between">
@@ -175,26 +207,24 @@ const Dashboard=()=> {
                         <SafeIcon icon={FiMessageCircle} className="text-blue-500 text-2xl" />
                       </div>
                     </div>
-                    
                     <div className="bg-green-50 rounded-lg p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-green-600 font-medium">Videos Uploaded</p>
+                          <p className="text-green-600 font-medium">AI Trained Bots</p>
                           <p className="text-3xl font-bold text-green-900">
-                            {chatbots.filter(bot=> bot.video).length}
+                            {chatbots.filter(bot=> bot.isAiTrained).length}
                           </p>
                         </div>
-                        <SafeIcon icon={FiVideo} className="text-green-500 text-2xl" />
+                        <SafeIcon icon={FiBrain} className="text-green-500 text-2xl" />
                       </div>
                     </div>
-                    
                     <div className="bg-purple-50 rounded-lg p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-purple-600 font-medium">Plan</p>
-                          <p className="text-3xl font-bold text-purple-900 capitalize">{user.plan}</p>
+                          <p className="text-purple-600 font-medium">Volunteers</p>
+                          <p className="text-3xl font-bold text-purple-900">{volunteers.length}</p>
                         </div>
-                        <SafeIcon icon={FiUser} className="text-purple-500 text-2xl" />
+                        <SafeIcon icon={FiUsers} className="text-purple-500 text-2xl" />
                       </div>
                     </div>
                   </div>
@@ -225,6 +255,12 @@ const Dashboard=()=> {
                           </span>
                         </div>
                         <div className="flex items-center space-x-3">
+                          <SafeIcon icon={FiBrain} className="text-gray-500" />
+                          <span className="text-gray-700">
+                            AI Training: {selectedChatbot.isAiTrained ? 'Trained' : 'Not trained'}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-3">
                           <SafeIcon icon={FiCode} className="text-gray-500" />
                           <span className="text-gray-700">
                             Script: Ready for integration
@@ -236,13 +272,23 @@ const Dashboard=()=> {
                             Theme: {selectedChatbot.theme?.primaryColor || 'Default'}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <SafeIcon icon={FiSettings} className="text-gray-500" />
-                          <span className="text-gray-700">
-                            Position: {selectedChatbot.position || 'bottom-right'}
-                          </span>
-                        </div>
                       </div>
+
+                      {/* Training Status */}
+                      {selectedChatbot.trainingData?.status === 'trained' && (
+                        <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <SafeIcon icon={FiBrain} className="text-green-600" />
+                            <h4 className="font-medium text-green-900">AI Training Complete</h4>
+                          </div>
+                          <div className="text-sm text-green-700 space-y-1">
+                            <p>📄 Documents: {selectedChatbot.trainingData.documents?.length || 0}</p>
+                            <p>🌐 Websites: {selectedChatbot.trainingData.urls?.length || 0}</p>
+                            <p>❓ FAQs: {selectedChatbot.trainingData.faqs?.length || 0}</p>
+                            <p>📅 Last trained: {new Date(selectedChatbot.trainingData.lastTrained).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -254,6 +300,10 @@ const Dashboard=()=> {
 
               {activeTab==='settings' && selectedChatbot && (
                 <ChatbotSettings chatbot={selectedChatbot} />
+              )}
+
+              {activeTab==='training' && selectedChatbot && (
+                <ChatbotTraining chatbot={selectedChatbot} />
               )}
 
               {activeTab==='customization' && selectedChatbot && (
@@ -268,6 +318,14 @@ const Dashboard=()=> {
                 <AnalyticsDashboard chatbot={selectedChatbot} />
               )}
 
+              {activeTab==='volunteers' && (
+                <VolunteerManagement 
+                  volunteers={volunteers} 
+                  isLoading={isLoadingVolunteers} 
+                  onRefresh={loadVolunteers} 
+                />
+              )}
+
               {activeTab==='preview' && selectedChatbot && (
                 <div className="bg-white rounded-xl shadow-sm p-8">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Chatbot Preview</h2>
@@ -275,6 +333,12 @@ const Dashboard=()=> {
                     <p className="text-gray-600">
                       This is how your chatbot will appear on your website
                     </p>
+                    {selectedChatbot.isAiTrained && (
+                      <div className="mt-2 inline-flex items-center space-x-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                        <SafeIcon icon={FiBrain} />
+                        <span>AI-Powered Responses Enabled</span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex justify-center">
                     <ChatbotPreview chatbot={selectedChatbot} />
@@ -287,7 +351,7 @@ const Dashboard=()=> {
               )}
 
               {/* Show message when no chatbot is selected */}
-              {!selectedChatbot && activeTab !=='overview' && activeTab !=='account' && (
+              {!selectedChatbot && activeTab !=='overview' && activeTab !=='account' && activeTab !=='volunteers' && (
                 <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                   <SafeIcon icon={FiMessageCircle} className="text-6xl text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No Chatbot Selected</h3>
