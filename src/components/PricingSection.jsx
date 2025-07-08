@@ -1,13 +1,13 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import {motion} from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
-import { paymentPlans, redirectToCheckout } from '../lib/stripe';
+import {paymentPlans,redirectToCheckout} from '../lib/stripe';
 
-const { FiCheck, FiCreditCard } = FiIcons;
+const {FiCheck,FiCreditCard}=FiIcons;
 
-const PricingSection = () => {
-  const handlePurchase = (paymentLink) => {
+const PricingSection=()=> {
+  const handlePurchase=(paymentLink)=> {
     redirectToCheckout(paymentLink);
   };
 
@@ -18,37 +18,42 @@ const PricingSection = () => {
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Simple, transparent pricing
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 mx-auto max-w-2xl">
             Choose the plan that fits your nonprofit's needs
           </p>
         </div>
+
         <div className="flex justify-center">
           <div className="grid gap-8 max-w-md">
-            {paymentPlans.map((plan, index) => (
+            {paymentPlans.map((plan,index)=> (
               <motion.div
                 key={index}
                 className="bg-white rounded-xl shadow-lg p-8 ring-2 ring-blue-500 relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
+                initial={{opacity: 0,y: 20}}
+                animate={{opacity: 1,y: 0}}
+                transition={{delay: index * 0.2}}
               >
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
                     Most Popular
                   </span>
                 </div>
+
                 <div className="text-center">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
                     {plan.name}
                   </h3>
                   <div className="text-4xl font-bold text-gray-900 mb-6">
                     ${plan.amount}
-                    <span className="text-lg text-gray-600 font-normal"> /{plan.interval}</span>
+                    <span className="text-lg text-gray-600 font-normal">
+                      /{plan.interval}
+                    </span>
                   </div>
+
                   <ul className="space-y-4 mb-8">
                     <li className="flex items-center space-x-3">
                       <SafeIcon icon={FiCheck} className="text-green-500 text-sm" />
-                      <span className="text-gray-600">Unlimited Video Chatbots</span>
+                      <span className="text-gray-600">1 Chatbot on 1 Website</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <SafeIcon icon={FiCheck} className="text-green-500 text-sm" />
@@ -67,8 +72,9 @@ const PricingSection = () => {
                       <span className="text-gray-600">Nonprofit Features</span>
                     </li>
                   </ul>
+
                   <button
-                    onClick={() => handlePurchase(plan.paymentLink)}
+                    onClick={()=> handlePurchase(plan.paymentLink)}
                     className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
                   >
                     <SafeIcon icon={FiCreditCard} />
@@ -79,6 +85,7 @@ const PricingSection = () => {
             ))}
           </div>
         </div>
+
         <div className="mt-12 text-center">
           <div className="flex justify-center items-center space-x-6 text-sm text-gray-500">
             <div className="flex items-center space-x-2">

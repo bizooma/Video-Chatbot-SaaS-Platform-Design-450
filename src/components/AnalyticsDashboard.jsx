@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 
-const { FiUsers, FiMessageCircle, FiMail, FiPhone, FiTrendingUp, FiCalendar, FiDownload } = FiIcons;
+const { FiUsers, FiMessageCircle, FiMail, FiPhone, FiTrendingUp, FiDownload } = FiIcons;
 
 const AnalyticsDashboard = ({ chatbot }) => {
   const [timeRange, setTimeRange] = useState('7d');
@@ -20,41 +20,21 @@ const AnalyticsDashboard = ({ chatbot }) => {
     recentActivity: []
   });
 
-  // Simulate analytics data
+  // Load analytics data (in production, this would come from your backend)
   useEffect(() => {
-    const simulateAnalytics = () => {
-      const baseData = {
-        totalInteractions: Math.floor(Math.random() * 1000) + 500,
-        chatMessages: Math.floor(Math.random() * 300) + 150,
-        emailsSent: Math.floor(Math.random() * 100) + 50,
-        phoneCalls: Math.floor(Math.random() * 50) + 25,
-        volunteerSignups: Math.floor(Math.random() * 20) + 10,
-        donations: Math.floor(Math.random() * 15) + 5,
-        conversionRate: (Math.random() * 10 + 5).toFixed(1),
-        popularTimes: [
-          { hour: '9 AM', interactions: 45 },
-          { hour: '12 PM', interactions: 78 },
-          { hour: '3 PM', interactions: 92 },
-          { hour: '6 PM', interactions: 67 },
-          { hour: '9 PM', interactions: 34 }
-        ],
-        topPages: [
-          { page: '/donate', interactions: 156 },
-          { page: '/volunteer', interactions: 134 },
-          { page: '/about', interactions: 89 },
-          { page: '/contact', interactions: 67 }
-        ],
-        recentActivity: [
-          { type: 'volunteer', message: 'New volunteer signup from Sarah M.', time: '2 minutes ago' },
-          { type: 'donation', message: '$50 donation received', time: '15 minutes ago' },
-          { type: 'email', message: 'Support email sent to john@example.com', time: '1 hour ago' },
-          { type: 'chat', message: 'Chat conversation completed', time: '2 hours ago' }
-        ]
-      };
-      setAnalytics(baseData);
-    };
-
-    simulateAnalytics();
+    // For now, show empty state for production
+    setAnalytics({
+      totalInteractions: 0,
+      chatMessages: 0,
+      emailsSent: 0,
+      phoneCalls: 0,
+      volunteerSignups: 0,
+      donations: 0,
+      conversionRate: 0,
+      popularTimes: [],
+      topPages: [],
+      recentActivity: []
+    });
   }, [timeRange, chatbot.id]);
 
   const statCards = [
@@ -62,43 +42,37 @@ const AnalyticsDashboard = ({ chatbot }) => {
       title: 'Total Interactions',
       value: analytics.totalInteractions,
       icon: FiUsers,
-      color: 'blue',
-      change: '+12%'
+      color: 'blue'
     },
     {
       title: 'Chat Messages',
       value: analytics.chatMessages,
       icon: FiMessageCircle,
-      color: 'green',
-      change: '+8%'
+      color: 'green'
     },
     {
       title: 'Emails Sent',
       value: analytics.emailsSent,
       icon: FiMail,
-      color: 'purple',
-      change: '+15%'
+      color: 'purple'
     },
     {
       title: 'Phone Calls',
       value: analytics.phoneCalls,
       icon: FiPhone,
-      color: 'orange',
-      change: '+5%'
+      color: 'orange'
     },
     {
       title: 'Volunteer Signups',
       value: analytics.volunteerSignups,
       icon: FiUsers,
-      color: 'emerald',
-      change: '+23%'
+      color: 'emerald'
     },
     {
       title: 'Donations',
       value: analytics.donations,
       icon: FiTrendingUp,
-      color: 'red',
-      change: '+18%'
+      color: 'red'
     }
   ];
 
@@ -170,7 +144,6 @@ const AnalyticsDashboard = ({ chatbot }) => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
                 <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-green-600 mt-1">{stat.change} vs last period</p>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getColorClasses(stat.color)}`}>
                 <SafeIcon icon={stat.icon} className="text-xl" />
@@ -180,69 +153,29 @@ const AnalyticsDashboard = ({ chatbot }) => {
         ))}
       </div>
 
-      {/* Charts and Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Popular Times */}
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Times</h3>
-          <div className="space-y-3">
-            {analytics.popularTimes.map((time, index) => (
-              <div key={time.hour} className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">{time.hour}</span>
-                <div className="flex items-center space-x-2">
-                  <div className="w-32 bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full"
-                      style={{ width: `${(time.interactions / 100) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">{time.interactions}</span>
-                </div>
-              </div>
-            ))}
+      {/* Empty State */}
+      <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
+        <SafeIcon icon={FiTrendingUp} className="text-6xl text-gray-400 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">No Analytics Data Yet</h3>
+        <p className="text-gray-600 mb-6">
+          Once your chatbot starts receiving interactions, you'll see detailed analytics here including:
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto text-left">
+          <div className="flex items-center space-x-2">
+            <SafeIcon icon={FiUsers} className="text-blue-500" />
+            <span className="text-sm text-gray-700">User engagement metrics</span>
           </div>
-        </div>
-
-        {/* Top Pages */}
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Pages</h3>
-          <div className="space-y-3">
-            {analytics.topPages.map((page, index) => (
-              <div key={page.page} className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">{page.page}</span>
-                <span className="text-sm font-medium text-gray-900">{page.interactions}</span>
-              </div>
-            ))}
+          <div className="flex items-center space-x-2">
+            <SafeIcon icon={FiMessageCircle} className="text-green-500" />
+            <span className="text-sm text-gray-700">Chat conversation data</span>
           </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-        <div className="bg-gray-50 rounded-lg p-6">
-          <div className="space-y-4">
-            {analytics.recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-start space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  activity.type === 'volunteer' ? 'bg-green-100 text-green-600' :
-                  activity.type === 'donation' ? 'bg-red-100 text-red-600' :
-                  activity.type === 'email' ? 'bg-blue-100 text-blue-600' :
-                  'bg-gray-100 text-gray-600'
-                }`}>
-                  <SafeIcon icon={
-                    activity.type === 'volunteer' ? FiUsers :
-                    activity.type === 'donation' ? FiTrendingUp :
-                    activity.type === 'email' ? FiMail :
-                    FiMessageCircle
-                  } className="text-sm" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-900">{activity.message}</p>
-                  <p className="text-xs text-gray-500">{activity.time}</p>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center space-x-2">
+            <SafeIcon icon={FiMail} className="text-purple-500" />
+            <span className="text-sm text-gray-700">Email interaction tracking</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <SafeIcon icon={FiTrendingUp} className="text-orange-500" />
+            <span className="text-sm text-gray-700">Conversion rate analysis</span>
           </div>
         </div>
       </div>

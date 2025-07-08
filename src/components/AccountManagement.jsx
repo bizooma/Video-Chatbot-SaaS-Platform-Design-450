@@ -79,7 +79,11 @@ const AccountManagement = () => {
     try {
       await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
       setSuccessMessage('Password changed successfully!');
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPasswordForm({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       setErrorMessage(error.message);
@@ -88,8 +92,8 @@ const AccountManagement = () => {
     }
   };
 
-  const handleSignOut = () => {
-    logout();
+  const handleSignOut = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -181,9 +185,7 @@ const AccountManagement = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center space-x-2 px-4 py-3 font-medium transition-colors ${
-              activeTab === tab.id
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
+              activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             <SafeIcon icon={tab.icon} />
@@ -216,6 +218,7 @@ const AccountManagement = () => {
                     required
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address
@@ -228,6 +231,7 @@ const AccountManagement = () => {
                     required
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
@@ -240,6 +244,7 @@ const AccountManagement = () => {
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Organization
@@ -252,6 +257,7 @@ const AccountManagement = () => {
                     placeholder="Your organization name"
                   />
                 </div>
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Website
@@ -265,6 +271,7 @@ const AccountManagement = () => {
                   />
                 </div>
               </div>
+
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -295,6 +302,7 @@ const AccountManagement = () => {
                   required
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   New Password
@@ -307,6 +315,7 @@ const AccountManagement = () => {
                   required
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirm New Password
@@ -319,6 +328,7 @@ const AccountManagement = () => {
                   required
                 />
               </div>
+
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -355,6 +365,7 @@ const AccountManagement = () => {
                     </p>
                   </div>
                 </div>
+
                 <div className="mb-4">
                   <h5 className="font-medium text-gray-900 mb-2">Plan Features:</h5>
                   <ul className="space-y-1">
@@ -424,8 +435,7 @@ const AccountManagement = () => {
                   <div className="flex-1">
                     <h4 className="font-semibold text-red-900 mb-2">Cancel Membership</h4>
                     <p className="text-red-700 text-sm mb-4">
-                      Once you cancel your membership, you will lose access to all premium features and your chatbots will be deactivated. 
-                      This action cannot be undone.
+                      Once you cancel your membership, you will lose access to all premium features and your chatbots will be deactivated. This action cannot be undone.
                     </p>
                     <button
                       onClick={() => setShowCancelModal(true)}
@@ -454,7 +464,7 @@ const AccountManagement = () => {
             <p className="text-gray-600 mb-6">
               We're sorry to see you go! Please help us improve by letting us know why you're cancelling.
             </p>
-            
+
             <form onSubmit={handleCancelMembership} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -475,7 +485,7 @@ const AccountManagement = () => {
                   <option value="other">Other</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Additional feedback (optional)
@@ -488,7 +498,7 @@ const AccountManagement = () => {
                   placeholder="Tell us more about your experience..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirm your email address
@@ -502,7 +512,7 @@ const AccountManagement = () => {
                   required
                 />
               </div>
-              
+
               <div className="flex space-x-4">
                 <button
                   type="submit"
