@@ -76,7 +76,7 @@ const ChatbotPreview = ({ chatbot }) => {
     if (chatbot?.donationUrl) {
       // Add amount parameter to donation URL if configured
       const url = chatbot.donationUrl.includes('?') 
-        ? `${chatbot.donationUrl}&amount=${amount}`
+        ? `${chatbot.donationUrl}&amount=${amount}` 
         : `${chatbot.donationUrl}?amount=${amount}`;
       window.open(url, '_blank');
     } else {
@@ -97,10 +97,10 @@ const ChatbotPreview = ({ chatbot }) => {
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="bg-white rounded-xl shadow-2xl w-80 h-[500px] mb-4 flex flex-col overflow-hidden"
+            className="bg-white rounded-xl shadow-2xl w-96 h-[650px] mb-4 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold">{chatbot?.name || 'Customer Support'}</h3>
                 <button
@@ -114,11 +114,11 @@ const ChatbotPreview = ({ chatbot }) => {
 
             {/* Video Section */}
             {chatbot?.video && (
-              <div className="relative bg-black">
+              <div className="relative bg-black h-36 flex-shrink-0">
                 <video
                   ref={videoRef}
                   src={chatbot.video}
-                  className="w-full h-32 object-cover"
+                  className="w-full h-full object-cover"
                   controls={false}
                   onPlay={() => setIsVideoPlaying(true)}
                   onPause={() => setIsVideoPlaying(false)}
@@ -129,27 +129,24 @@ const ChatbotPreview = ({ chatbot }) => {
                   className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-40 transition-colors"
                 >
                   <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                    <SafeIcon
-                      icon={isVideoPlaying ? FiPause : FiPlay}
-                      className="text-gray-800 text-xl"
-                    />
+                    <SafeIcon icon={isVideoPlaying ? FiPause : FiPlay} className="text-gray-800 text-xl" />
                   </div>
                 </button>
               </div>
             )}
 
             {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3">
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 min-h-0">
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                    className={`max-w-xs px-3 py-2 rounded-lg text-sm leading-relaxed ${
                       message.sender === 'user'
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-white text-gray-800 shadow-sm border'
                     }`}
                   >
                     {message.text}
@@ -160,7 +157,7 @@ const ChatbotPreview = ({ chatbot }) => {
 
             {/* Input */}
             {chatbot?.chatEnabled && (
-              <div className="p-4 border-t">
+              <div className="p-4 border-t flex-shrink-0">
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -182,7 +179,7 @@ const ChatbotPreview = ({ chatbot }) => {
 
             {/* Volunteer Button */}
             {chatbot?.volunteerEnabled && (
-              <div className="px-4 pb-2">
+              <div className="px-4 pb-2 flex-shrink-0">
                 <button
                   onClick={handleVolunteerClick}
                   className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 font-medium"
@@ -195,7 +192,7 @@ const ChatbotPreview = ({ chatbot }) => {
 
             {/* Donation Buttons */}
             {chatbot?.donationEnabled && chatbot?.donationAmounts?.length > 0 && (
-              <div className="px-4 pb-2">
+              <div className="px-4 pb-2 flex-shrink-0">
                 <div className="mb-2">
                   <p className="text-sm font-medium text-gray-700 text-center">Quick Donation</p>
                 </div>
@@ -215,7 +212,7 @@ const ChatbotPreview = ({ chatbot }) => {
             )}
 
             {/* Contact Action Buttons */}
-            <div className="p-4 bg-gray-50 border-t">
+            <div className="p-4 bg-gray-50 border-t flex-shrink-0">
               <div className="flex space-x-2">
                 {chatbot?.emailEnabled && (
                   <button
@@ -226,7 +223,6 @@ const ChatbotPreview = ({ chatbot }) => {
                     <span>Email</span>
                   </button>
                 )}
-
                 {chatbot?.phoneEnabled && (
                   <button
                     onClick={handlePhoneClick}

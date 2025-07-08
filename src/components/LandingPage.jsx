@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import DemoChatbot from './DemoChatbot';
+import PricingSection from './PricingSection';
 
 const { FiPlay, FiMail, FiPhone, FiMessageCircle, FiCheck, FiStar, FiArrowRight, FiVideo, FiYoutube, FiLogIn } = FiIcons;
 
@@ -47,28 +48,10 @@ const LandingPage = () => {
     }
   ];
 
-  const pricingPlans = [
-    {
-      name: 'Starter',
-      price: '$29',
-      features: ['1 Chatbot', '1 Video Upload', 'Basic Analytics', 'Email Support']
-    },
-    {
-      name: 'Pro',
-      price: '$99',
-      features: ['5 Chatbots', 'Unlimited Videos', 'Advanced Analytics', 'Priority Support', 'Custom Branding']
-    },
-    {
-      name: 'Enterprise',
-      price: '$299',
-      features: ['Unlimited Chatbots', 'Unlimited Videos', 'API Access', 'White Label', '24/7 Support']
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <motion.div
@@ -104,23 +87,48 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Hero Section with Video Background */}
+      <section className="relative py-20 overflow-hidden">
+        {/* Video Background */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+          >
+            <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
+            {/* Fallback for when video doesn't load */}
+            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-800"></div>
+          </video>
+          
+          {/* Video Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/70 to-indigo-900/80"></div>
+          
+          {/* Animated Overlay Pattern */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-white/5 to-transparent animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <motion.h1
-              className="text-5xl md:text-6xl font-bold text-gray-900 mb-6"
+              className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
               Transform Nonprofit Support with{' '}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
                 Video Chatbots
               </span>
             </motion.h1>
             <motion.p
-              className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
+              className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto drop-shadow-md"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -135,22 +143,23 @@ const LandingPage = () => {
             >
               <button
                 onClick={() => setIsLoginOpen(true)}
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
-                <span>Start Free Trial</span>
+                <span>Get Started</span>
                 <SafeIcon icon={FiArrowRight} />
               </button>
               <button
                 onClick={handleWatchDemo}
-                className="border border-gray-300 text-gray-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
-                <SafeIcon icon={FiYoutube} className="text-red-600" />
+                <SafeIcon icon={FiYoutube} className="text-red-400" />
                 <span>Watch Demo</span>
               </button>
             </motion.div>
+
             {/* Demo Notice */}
             <motion.div
-              className="mt-8 inline-flex items-center space-x-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium"
+              className="mt-8 inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-full text-sm font-medium"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
@@ -160,6 +169,11 @@ const LandingPage = () => {
             </motion.div>
           </div>
         </div>
+
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-indigo-400/20 rounded-full blur-xl animate-pulse delay-500"></div>
       </section>
 
       {/* Features Section */}
@@ -194,61 +208,7 @@ const LandingPage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Simple, transparent pricing
-            </h2>
-            <p className="text-xl text-gray-600">
-              Choose the plan that fits your nonprofit's needs
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <motion.div
-                key={index}
-                className={`bg-white rounded-xl shadow-lg p-8 ${index === 1 ? 'ring-2 ring-blue-500 relative' : ''}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
-              >
-                {index === 1 && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                  <div className="text-4xl font-bold text-gray-900 mb-6">
-                    {plan.price} <span className="text-lg text-gray-600 font-normal">/month</span>
-                  </div>
-                  <ul className="space-y-4 mb-8">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center space-x-3">
-                        <SafeIcon icon={FiCheck} className="text-green-500 text-sm" />
-                        <span className="text-gray-600">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    onClick={() => setIsLoginOpen(true)}
-                    className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                      index === 1
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    }`}
-                  >
-                    Get Started
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* Login Modal */}
       {isLoginOpen && (

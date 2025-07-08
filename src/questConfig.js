@@ -1,0 +1,8 @@
+export default {
+  QUEST_FEEDBACK_QUESTID: 'c-greta-feedback-workflow',
+  USER_ID: 'u-17dc5cc8-6dc3-4378-a26e-b8d5a12703a6',
+  APIKEY: 'k-5c3651a8-33f0-4443-963c-52fed378998d',
+  TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1LTE3ZGM1Y2M4LTZkYzMtNDM3OC1hMjZlLWI4ZDVhMTI3MDNhNiIsImlhdCI6MTc1MTY0ODA2MywiZXhwIjoxNzU0MjQwMDYzfQ.AbT_Bpwgc5L7ji3WTUfedcq_VsYKu-lKpYlzbWartzk',
+  ENTITYID: 'e-c7d14b2f-0dd9-4c74-a9bd-aef2d167fa2d',
+  PRIMARY_COLOR: '#3b82f6'
+};

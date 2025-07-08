@@ -4,7 +4,7 @@ import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import { sendEmail } from '../services/emailService';
 
-const { FiMessageCircle, FiMail, FiPhone, FiX, FiPlay, FiPause, FiSend, FiHeart, FiUsers, FiUser, FiCheckCircle } = FiIcons;
+const { FiMessageCircle, FiMail, FiPhone, FiX, FiPlay, FiPause, FiSend, FiHeart, FiUsers, FiUser, FiCheckCircle, FiAlertCircle } = FiIcons;
 
 const DemoChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -122,13 +122,24 @@ const DemoChatbot = () => {
       console.log('Email result:', result);
 
       if (result.success) {
-        // Show success message in chat
-        const emailMessage = {
-          id: Date.now(),
-          text: `📧 Thank you ${emailForm.name}! Your message has been sent successfully to ${demoChatbot.email}. We'll get back to you soon!`,
-          sender: 'bot'
-        };
-        setMessages(prev => [...prev, emailMessage]);
+        if (result.fallback && result.mailtoLink) {
+          // Handle mailto fallback
+          window.location.href = result.mailtoLink;
+          const emailMessage = {
+            id: Date.now(),
+            text: `📧 Opening your email client to send message to ${demoChatbot.email}. Please send the email from your email application.`,
+            sender: 'bot'
+          };
+          setMessages(prev => [...prev, emailMessage]);
+        } else {
+          // Show success message in chat
+          const emailMessage = {
+            id: Date.now(),
+            text: `📧 Thank you ${emailForm.name}! Your message has been sent successfully to ${demoChatbot.email}. We'll get back to you soon!`,
+            sender: 'bot'
+          };
+          setMessages(prev => [...prev, emailMessage]);
+        }
 
         // Reset form and close modal
         setEmailForm({ name: '', email: '', message: '' });
@@ -138,7 +149,6 @@ const DemoChatbot = () => {
     } catch (error) {
       console.error('Email send error:', error);
       setSubmitStatus('error');
-      
       // Show error message in chat
       const errorMessage = {
         id: Date.now(),
@@ -188,10 +198,10 @@ const DemoChatbot = () => {
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            className="bg-white rounded-xl shadow-2xl w-80 h-[550px] mb-4 flex flex-col overflow-hidden border-2 border-blue-200"
+            className="bg-white rounded-xl shadow-2xl w-96 h-[650px] mb-4 flex flex-col overflow-hidden border-2 border-blue-200"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 relative">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 relative flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <h3 className="font-semibold">{demoChatbot.name}</h3>
@@ -206,7 +216,7 @@ const DemoChatbot = () => {
             </div>
 
             {/* Video Section */}
-            <div className="relative h-32 bg-black">
+            <div className="relative h-36 bg-black flex-shrink-0">
               {!isVideoPlaying ? (
                 <>
                   <img
@@ -252,7 +262,7 @@ const DemoChatbot = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50">
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 min-h-0">
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
@@ -261,7 +271,7 @@ const DemoChatbot = () => {
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                    className={`max-w-xs px-3 py-2 rounded-lg text-sm leading-relaxed ${
                       message.sender === 'user'
                         ? 'bg-blue-600 text-white'
                         : 'bg-white text-gray-800 shadow-sm border'
@@ -274,7 +284,7 @@ const DemoChatbot = () => {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t bg-white">
+            <div className="p-4 border-t bg-white flex-shrink-0">
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -294,7 +304,7 @@ const DemoChatbot = () => {
             </div>
 
             {/* Volunteer Button */}
-            <div className="px-4 pb-2">
+            <div className="px-4 pb-2 flex-shrink-0">
               <button
                 onClick={handleVolunteerClick}
                 className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 font-medium"
@@ -305,7 +315,7 @@ const DemoChatbot = () => {
             </div>
 
             {/* Donation Buttons */}
-            <div className="px-4 pb-2">
+            <div className="px-4 pb-2 flex-shrink-0">
               <div className="mb-2">
                 <p className="text-sm font-medium text-gray-700 text-center">Quick Donation</p>
               </div>
@@ -324,7 +334,7 @@ const DemoChatbot = () => {
             </div>
 
             {/* Contact Action Buttons */}
-            <div className="p-4 bg-gray-50 border-t">
+            <div className="p-4 bg-gray-50 border-t flex-shrink-0">
               <div className="flex space-x-2">
                 <button
                   onClick={handleEmailClick}
@@ -424,9 +434,19 @@ const DemoChatbot = () => {
                 </div>
 
                 {submitStatus === 'error' && (
-                  <div className="bg-red-50 p-3 rounded-lg">
+                  <div className="bg-red-50 p-3 rounded-lg flex items-center space-x-2">
+                    <SafeIcon icon={FiAlertCircle} className="text-red-600" />
                     <p className="text-sm text-red-800">
-                      ❌ Failed to send message. Please try again.
+                      Failed to send message. Please try again.
+                    </p>
+                  </div>
+                )}
+
+                {submitStatus === 'success' && (
+                  <div className="bg-green-50 p-3 rounded-lg flex items-center space-x-2">
+                    <SafeIcon icon={FiCheckCircle} className="text-green-600" />
+                    <p className="text-sm text-green-800">
+                      Message sent successfully!
                     </p>
                   </div>
                 )}
