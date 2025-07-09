@@ -1,37 +1,36 @@
-import React,{useState,useEffect} from 'react';
-import {useNavigate,useLocation} from 'react-router-dom';
-import {motion} from 'framer-motion';
-import {useAuth} from '../contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 
-const {FiLock,FiCheckCircle,FiAlertCircle,FiEye,FiEyeOff}=FiIcons;
+const { FiLock, FiCheckCircle, FiAlertCircle, FiEye, FiEyeOff } = FiIcons;
 
-const ResetPassword=()=> {
-  const [password,setPassword]=useState('');
-  const [confirmPassword,setConfirmPassword]=useState('');
-  const [showPassword,setShowPassword]=useState(false);
-  const [showConfirmPassword,setShowConfirmPassword]=useState(false);
-  const [isSubmitting,setIsSubmitting]=useState(false);
-  const [status,setStatus]=useState('');
-  const [errorMessage,setErrorMessage]=useState('');
-  
-  const {updatePassword}=useAuth();
-  const navigate=useNavigate();
-  const location=useLocation();
+const ResetPassword = () => {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(()=> {
+  const { updatePassword } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
     // Check if we have the required hash parameters for password reset
-    const hashParams=new URLSearchParams(location.hash.substring(1));
-    const accessToken=hashParams.get('access_token');
-    const type=hashParams.get('type');
-    
-    if (!accessToken || type !=='recovery') {
+    const hashParams = new URLSearchParams(location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const type = hashParams.get('type');
+    if (!accessToken || type !== 'recovery') {
       navigate('/');
     }
-  },[location,navigate]);
+  }, [location, navigate]);
 
-  const handleSubmit=async (e)=> {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage('');
@@ -43,8 +42,7 @@ const ResetPassword=()=> {
       setIsSubmitting(false);
       return;
     }
-
-    if (password !==confirmPassword) {
+    if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match');
       setIsSubmitting(false);
       return;
@@ -53,11 +51,10 @@ const ResetPassword=()=> {
     try {
       await updatePassword(password);
       setStatus('success');
-      
       // Redirect to login after 3 seconds
-      setTimeout(()=> {
+      setTimeout(() => {
         navigate('/');
-      },3000);
+      }, 3000);
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
@@ -65,13 +62,21 @@ const ResetPassword=()=> {
     }
   };
 
-  if (status==='success') {
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  if (status === 'success') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
         <motion.div
           className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center"
-          initial={{opacity: 0,scale: 0.9}}
-          animate={{opacity: 1,scale: 1}}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
         >
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <SafeIcon icon={FiCheckCircle} className="text-green-600 text-2xl" />
@@ -83,7 +88,7 @@ const ResetPassword=()=> {
             Your password has been changed. You'll be redirected to the login page shortly.
           </p>
           <button
-            onClick={()=> navigate('/')}
+            onClick={() => navigate('/')}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
             Go to Login
@@ -97,13 +102,13 @@ const ResetPassword=()=> {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
       <motion.div
         className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full"
-        initial={{opacity: 0,scale: 0.9}}
-        animate={{opacity: 1,scale: 1}}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
       >
         <div className="text-center mb-8">
-          <img 
-            src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" 
-            alt="NPO Bots Logo" 
+          <img
+            src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png"
+            alt="NPO Bots Logo"
             className="h-12 w-auto mx-auto mb-4"
           />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -131,14 +136,14 @@ const ResetPassword=()=> {
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e)=> setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter new password"
                 required
               />
               <button
                 type="button"
-                onClick={()=> setShowPassword(!showPassword)}
+                onClick={togglePassword}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <SafeIcon icon={showPassword ? FiEyeOff : FiEye} />
@@ -155,14 +160,14 @@ const ResetPassword=()=> {
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
-                onChange={(e)=> setConfirmPassword(e.target.value)}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Confirm new password"
                 required
               />
               <button
                 type="button"
-                onClick={()=> setShowConfirmPassword(!showConfirmPassword)}
+                onClick={toggleConfirmPassword}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <SafeIcon icon={showConfirmPassword ? FiEyeOff : FiEye} />
@@ -192,7 +197,7 @@ const ResetPassword=()=> {
 
         <div className="mt-6 text-center">
           <button
-            onClick={()=> navigate('/')}
+            onClick={() => navigate('/')}
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
             Back to Login

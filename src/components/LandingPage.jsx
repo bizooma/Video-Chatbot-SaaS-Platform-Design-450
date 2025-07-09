@@ -1,7 +1,7 @@
-import React,{useState} from 'react';
-import {motion} from 'framer-motion';
-import {useNavigate} from 'react-router-dom';
-import {useAuth} from '../contexts/AuthContext';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import DemoChatbot from './DemoChatbot';
@@ -9,97 +9,103 @@ import PricingSection from './PricingSection';
 import FAQSection from './FAQSection';
 import ContactSection from './ContactSection';
 
-const {FiPlay,FiMessageCircle,FiCheck,FiArrowRight,FiVideo,FiYoutube,FiLogIn,FiAlertCircle,FiUser,FiMail,FiLock,FiPhone,FiUsers,FiDollarSign,FiX,FiCheckCircle}=FiIcons;
+const { FiPlay, FiMessageCircle, FiCheck, FiArrowRight, FiVideo, FiYoutube, FiLogIn, FiAlertCircle, FiUser, FiMail, FiLock, FiPhone, FiUsers, FiDollarSign, FiX, FiCheckCircle, FiEye, FiEyeOff } = FiIcons;
 
-const LandingPage=()=> {
-  const [isAuthModalOpen,setIsAuthModalOpen]=useState(false);
-  const [isForgotPasswordModalOpen,setIsForgotPasswordModalOpen]=useState(false);
-  const [authMode,setAuthMode]=useState('login');// 'login' or 'signup'
-  const [formData,setFormData]=useState({
+const LandingPage = () => {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
-    name: '',
     company: ''
   });
-  const [forgotPasswordEmail,setForgotPasswordEmail]=useState('');
-  const [forgotPasswordStatus,setForgotPasswordStatus]=useState('');
-  const [isSubmittingForgotPassword,setIsSubmittingForgotPassword]=useState(false);
-  const {login,signup,authError,resetPassword}=useAuth();
-  const navigate=useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordStatus, setForgotPasswordStatus] = useState('');
+  const [isSubmittingForgotPassword, setIsSubmittingForgotPassword] = useState(false);
+  
+  const { login, signup, authError, resetPassword } = useAuth();
+  const navigate = useNavigate();
 
-  const handleAuth=async (e)=> {
+  const handleAuth = async (e) => {
     e.preventDefault();
     try {
-      if (authMode==='login') {
-        await login(formData.email,formData.password);
+      if (authMode === 'login') {
+        await login(formData.email, formData.password);
       } else {
-        await signup(formData.email,formData.password,{
+        await signup(formData.email, formData.password, {
           name: formData.name,
           company: formData.company
         });
       }
       navigate('/dashboard');
     } catch (error) {
-      console.error('Authentication failed:',error);
+      console.error('Authentication failed:', error);
     }
   };
 
-  const handleForgotPassword=async (e)=> {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
     setIsSubmittingForgotPassword(true);
     setForgotPasswordStatus('');
-    
     try {
       await resetPassword(forgotPasswordEmail);
       setForgotPasswordStatus('success');
     } catch (error) {
       setForgotPasswordStatus('error');
-      console.error('Password reset failed:',error);
+      console.error('Password reset failed:', error);
     } finally {
       setIsSubmittingForgotPassword(false);
     }
   };
 
-  const resetForm=()=> {
+  const resetForm = () => {
     setFormData({
       email: '',
       password: '',
       name: '',
       company: ''
     });
+    setShowPassword(false);
   };
 
-  const resetForgotPasswordForm=()=> {
+  const resetForgotPasswordForm = () => {
     setForgotPasswordEmail('');
     setForgotPasswordStatus('');
   };
 
-  const switchAuthMode=(mode)=> {
+  const switchAuthMode = (mode) => {
     setAuthMode(mode);
     resetForm();
   };
 
-  const openForgotPasswordModal=()=> {
+  const openForgotPasswordModal = () => {
     setIsAuthModalOpen(false);
     setIsForgotPasswordModalOpen(true);
     resetForgotPasswordForm();
   };
 
-  const closeForgotPasswordModal=()=> {
+  const closeForgotPasswordModal = () => {
     setIsForgotPasswordModalOpen(false);
     setIsAuthModalOpen(true);
     resetForgotPasswordForm();
   };
 
-  const handleWatchDemo=()=> {
-    window.open('https://www.youtube.com/watch?v=g1wVgV58JbE','_blank');
+  const handleWatchDemo = () => {
+    window.open('https://www.youtube.com/watch?v=g1wVgV58JbE', '_blank');
   };
 
-  const features=[
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const features = [
     {
       icon: FiMessageCircle,
       title: 'Chat Window',
-      description: 'Chat with an AI agent for 24/7 support,answering common questions and guiding visitors through your mission.'
+      description: 'Chat with an AI agent for 24/7 support, answering common questions and guiding visitors through your mission.'
     },
     {
       icon: FiVideo,
@@ -114,7 +120,7 @@ const LandingPage=()=> {
     {
       icon: FiMail,
       title: 'Email Button',
-      description: 'Collect questions,stories,or support requests with ease through integrated contact forms.'
+      description: 'Collect questions, stories, or support requests with ease through integrated contact forms.'
     },
     {
       icon: FiUsers,
@@ -136,38 +142,32 @@ const LandingPage=()=> {
           <div className="flex justify-between items-center py-6">
             <motion.div
               className="flex items-center space-x-2"
-              initial={{opacity: 0,x: -20}}
-              animate={{opacity: 1,x: 0}}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
             >
-              <img 
-                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" 
-                alt="NPO Bots Logo" 
-                className="h-16 w-auto"
-              />
+              <img src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" alt="NPO Bots Logo" className="h-16 w-auto" />
             </motion.div>
-
             <div className="flex items-center space-x-4">
               <motion.button
-                onClick={()=> {
+                onClick={() => {
                   setAuthMode('login');
                   setIsAuthModalOpen(true);
                 }}
                 className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <SafeIcon icon={FiLogIn} className="text-gray-600" />
                 <span>Log In</span>
               </motion.button>
-
               <motion.button
-                onClick={()=> {
+                onClick={() => {
                   setAuthMode('signup');
                   setIsAuthModalOpen(true);
                 }}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Get Started
               </motion.button>
@@ -192,38 +192,35 @@ const LandingPage=()=> {
           </video>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/70 to-indigo-900/80"></div>
         </div>
-
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <motion.h1
               className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
-              initial={{opacity: 0,y: 20}}
-              animate={{opacity: 1,y: 0}}
-              transition={{delay: 0.2}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
             >
               Empower Your Mission with a{' '}
               <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
                 Smart Nonprofit Chatbot
               </span>
             </motion.h1>
-
             <motion.p
               className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto drop-shadow-md"
-              initial={{opacity: 0,y: 20}}
-              animate={{opacity: 1,y: 0}}
-              transition={{delay: 0.4}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
             >
-              Turn website visitors into volunteers,donors,and advocates—24/7
+              Turn website visitors into volunteers, donors, and advocates—24/7
             </motion.p>
-
             <motion.div
               className="flex justify-center space-x-4"
-              initial={{opacity: 0,y: 20}}
-              animate={{opacity: 1,y: 0}}
-              transition={{delay: 0.6}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
             >
               <button
-                onClick={()=> {
+                onClick={() => {
                   setAuthMode('signup');
                   setIsAuthModalOpen(true);
                 }}
@@ -232,7 +229,6 @@ const LandingPage=()=> {
                 <span>Get Started</span>
                 <SafeIcon icon={FiArrowRight} />
               </button>
-
               <button
                 onClick={handleWatchDemo}
                 className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
@@ -241,12 +237,11 @@ const LandingPage=()=> {
                 <span>Watch Demo</span>
               </button>
             </motion.div>
-
             <motion.div
               className="mt-8 inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-full text-sm font-medium"
-              initial={{opacity: 0,y: 20}}
-              animate={{opacity: 1,y: 0}}
-              transition={{delay: 0.8}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
             >
               <SafeIcon icon={FiMessageCircle} className="text-sm" />
               <span>Try our interactive demo chatbot in the bottom right corner!</span>
@@ -266,18 +261,17 @@ const LandingPage=()=> {
               AI Chatbots Built for Nonprofits. No Coding Required.
             </h3>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              NPOBots is a simple,powerful SaaS platform that lets your nonprofit launch a fully functional chatbot in minutes. Designed specifically for the nonprofit world,our chatbots come pre-loaded with everything you need to connect with supporters,increase donations,and grow your impact.
+              NPOBots is a simple, powerful SaaS platform that lets your nonprofit launch a fully functional chatbot in minutes. Designed specifically for the nonprofit world, our chatbots come pre-loaded with everything you need to connect with supporters, increase donations, and grow your impact.
             </p>
           </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {features.map((feature,index)=> (
+            {features.map((feature, index) => (
               <motion.div
                 key={index}
                 className="text-center p-8 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-100 hover:border-gray-200"
-                initial={{opacity: 0,y: 20}}
-                animate={{opacity: 1,y: 0}}
-                transition={{delay: index * 0.1}}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <SafeIcon icon={feature.icon} className="text-blue-600 text-2xl" />
@@ -311,9 +305,9 @@ const LandingPage=()=> {
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 transition-colors"
               >
-                Bizooma,LLC
+                Bizooma, LLC
               </a>
-              . | NPO Bots,All rights reserved.
+              . | NPO Bots, All rights reserved.
             </p>
           </div>
         </div>
@@ -324,30 +318,27 @@ const LandingPage=()=> {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <motion.div
             className="bg-white rounded-xl p-8 max-w-md w-full mx-4"
-            initial={{opacity: 0,scale: 0.9}}
-            animate={{opacity: 1,scale: 1}}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
           >
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {authMode==='login' ? 'Welcome Back' : 'Get Started with NPO Bots'}
+                {authMode === 'login' ? 'Welcome Back' : 'Get Started with NPO Bots'}
               </h3>
               <p className="text-gray-600">
-                {authMode==='login' 
-                  ? 'Sign in to your account' 
-                  : 'Create your account to start building chatbots'
-                }
+                {authMode === 'login'
+                  ? 'Sign in to your account'
+                  : 'Create your account to start building chatbots'}
               </p>
             </div>
-
             {authError && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
                 <SafeIcon icon={FiAlertCircle} className="text-red-600" />
                 <span className="text-red-800">{authError}</span>
               </div>
             )}
-
             <form onSubmit={handleAuth} className="space-y-4">
-              {authMode==='signup' && (
+              {authMode === 'signup' && (
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -358,14 +349,13 @@ const LandingPage=()=> {
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e)=> setFormData(prev=> ({...prev,name: e.target.value}))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Enter your full name"
                         required
                       />
                     </div>
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Organization (Optional)
@@ -373,14 +363,13 @@ const LandingPage=()=> {
                     <input
                       type="text"
                       value={formData.company}
-                      onChange={(e)=> setFormData(prev=> ({...prev,company: e.target.value}))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Your organization name"
                     />
                   </div>
                 </>
               )}
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
@@ -390,14 +379,13 @@ const LandingPage=()=> {
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e)=> setFormData(prev=> ({...prev,email: e.target.value}))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your email"
                     required
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
@@ -405,18 +393,24 @@ const LandingPage=()=> {
                 <div className="relative">
                   <SafeIcon icon={FiLock} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
-                    onChange={(e)=> setFormData(prev=> ({...prev,password: e.target.value}))}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your password"
                     required
                   />
+                  <button 
+                    type="button" 
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
+                  >
+                    <SafeIcon icon={showPassword ? FiEyeOff : FiEye} className="text-lg" />
+                  </button>
                 </div>
               </div>
-
               {/* Forgot Password Link - Only show on login */}
-              {authMode==='login' && (
+              {authMode === 'login' && (
                 <div className="text-right">
                   <button
                     type="button"
@@ -427,32 +421,30 @@ const LandingPage=()=> {
                   </button>
                 </div>
               )}
-
               <div className="flex space-x-4">
                 <button
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
-                  {authMode==='login' ? 'Sign In' : 'Create Account'}
+                  {authMode === 'login' ? 'Sign In' : 'Create Account'}
                 </button>
                 <button
                   type="button"
-                  onClick={()=> setIsAuthModalOpen(false)}
+                  onClick={() => setIsAuthModalOpen(false)}
                   className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
                 >
                   Cancel
                 </button>
               </div>
             </form>
-
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                {authMode==='login' ? "Don't have an account?" : "Already have an account?"}
+                {authMode === 'login' ? "Don't have an account?" : "Already have an account?"}
                 <button
-                  onClick={()=> switchAuthMode(authMode==='login' ? 'signup' : 'login')}
+                  onClick={() => switchAuthMode(authMode === 'login' ? 'signup' : 'login')}
                   className="ml-2 text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  {authMode==='login' ? 'Sign up' : 'Sign in'}
+                  {authMode === 'login' ? 'Sign up' : 'Sign in'}
                 </button>
               </p>
             </div>
@@ -465,13 +457,11 @@ const LandingPage=()=> {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <motion.div
             className="bg-white rounded-xl p-8 max-w-md w-full mx-4"
-            initial={{opacity: 0,scale: 0.9}}
-            animate={{opacity: 1,scale: 1}}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">
-                Reset Password
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900">Reset Password</h3>
               <button
                 onClick={closeForgotPasswordModal}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -479,8 +469,7 @@ const LandingPage=()=> {
                 <SafeIcon icon={FiX} className="text-xl" />
               </button>
             </div>
-
-            {forgotPasswordStatus==='success' ? (
+            {forgotPasswordStatus === 'success' ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <SafeIcon icon={FiCheckCircle} className="text-green-600 text-2xl" />
@@ -503,8 +492,7 @@ const LandingPage=()=> {
                 <p className="text-gray-600 mb-6">
                   Enter your email address and we'll send you a link to reset your password.
                 </p>
-
-                {forgotPasswordStatus==='error' && (
+                {forgotPasswordStatus === 'error' && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
                     <SafeIcon icon={FiAlertCircle} className="text-red-600" />
                     <span className="text-red-800">
@@ -512,7 +500,6 @@ const LandingPage=()=> {
                     </span>
                   </div>
                 )}
-
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -523,14 +510,13 @@ const LandingPage=()=> {
                       <input
                         type="email"
                         value={forgotPasswordEmail}
-                        onChange={(e)=> setForgotPasswordEmail(e.target.value)}
+                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Enter your email"
                         required
                       />
                     </div>
                   </div>
-
                   <div className="flex space-x-4">
                     <button
                       type="submit"
