@@ -1,17 +1,23 @@
 import React from 'react';
-import * as FiIcons from 'react-icons/fi';
-import { FiAlertTriangle } from 'react-icons/fi';
 
-const SafeIcon = ({ icon, name, ...props }) => {
-  let IconComponent;
-  
-  try {
-    IconComponent = icon || (name && FiIcons[`Fi${name}`]);
-  } catch (e) {
-    IconComponent = null;
-  }
-  
-  return IconComponent ? React.createElement(IconComponent, props) : <FiAlertTriangle {...props} />;
+const SafeIcon = ({ src, alt, className = "", fallback, ...props }) => {
+  const handleImageError = (e) => {
+    if (fallback) {
+      e.target.src = fallback;
+    } else {
+      e.target.style.display = 'none';
+    }
+  };
+
+  return (
+    <img
+      src={src}
+      alt={alt || "Icon"}
+      className={`inline-block ${className}`}
+      onError={handleImageError}
+      {...props}
+    />
+  );
 };
 
 export default SafeIcon;

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { FeedbackWorkflow } from '@questlabs/react-sdk';
-import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import questConfig from '../questConfig';
 
 const FeedbackButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       {/* Floating Feedback Button */}
@@ -16,7 +15,11 @@ const FeedbackButton = () => {
         className="flex gap-1 rounded-t-md rounded-b-none justify-end items-center px-3 text-14 leading-5 font-semibold py-2 text-white z-50 fixed top-[calc(50%-20px)] -right-10 rotate-[270deg] transition-all h-9"
       >
         <div className="w-fit h-fit rotate-90 transition-all duration-300">
-          <SafeIcon icon={FiIcons.FiMessageCircle} />
+          <SafeIcon 
+            src="https://cdn-icons-png.flaticon.com/512/1370/1370907.png" 
+            alt="Message Circle"
+            className="w-4 h-4"
+          />
         </div>
         <p className="text-white text-sm font-medium leading-none">Feedback</p>
       </button>

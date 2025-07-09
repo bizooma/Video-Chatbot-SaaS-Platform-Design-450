@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import DemoChatbot from './DemoChatbot';
 import PricingSection from './PricingSection';
+import VeteranOwnedSection from './VeteranOwnedSection';
 import FAQSection from './FAQSection';
 import ContactSection from './ContactSection';
-
-const { FiPlay, FiMessageCircle, FiCheck, FiArrowRight, FiVideo, FiYoutube, FiLogIn, FiAlertCircle, FiUser, FiMail, FiLock, FiPhone, FiUsers, FiDollarSign, FiX, FiCheckCircle, FiEye, FiEyeOff } = FiIcons;
 
 const LandingPage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -25,7 +23,7 @@ const LandingPage = () => {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [forgotPasswordStatus, setForgotPasswordStatus] = useState('');
   const [isSubmittingForgotPassword, setIsSubmittingForgotPassword] = useState(false);
-  
+
   const { login, signup, authError, resetPassword } = useAuth();
   const navigate = useNavigate();
 
@@ -50,6 +48,7 @@ const LandingPage = () => {
     e.preventDefault();
     setIsSubmittingForgotPassword(true);
     setForgotPasswordStatus('');
+
     try {
       await resetPassword(forgotPasswordEmail);
       setForgotPasswordStatus('success');
@@ -62,12 +61,7 @@ const LandingPage = () => {
   };
 
   const resetForm = () => {
-    setFormData({
-      email: '',
-      password: '',
-      name: '',
-      company: ''
-    });
+    setFormData({ email: '', password: '', name: '', company: '' });
     setShowPassword(false);
   };
 
@@ -103,32 +97,32 @@ const LandingPage = () => {
 
   const features = [
     {
-      icon: FiMessageCircle,
+      icon: "https://cdn-icons-png.flaticon.com/512/1370/1370907.png",
       title: 'Chat Window',
       description: 'Chat with an AI agent for 24/7 support, answering common questions and guiding visitors through your mission.'
     },
     {
-      icon: FiVideo,
+      icon: "https://cdn-icons-png.flaticon.com/512/1179/1179069.png",
       title: 'Intro Video',
       description: 'Greet visitors with a compelling video that shares your mission and creates emotional connection.'
     },
     {
-      icon: FiPhone,
+      icon: "https://cdn-icons-png.flaticon.com/512/159/159832.png",
       title: 'Click-to-Call',
       description: 'One tap and supporters are connected with your team for immediate personal engagement.'
     },
     {
-      icon: FiMail,
+      icon: "https://cdn-icons-png.flaticon.com/512/732/732200.png",
       title: 'Email Button',
       description: 'Collect questions, stories, or support requests with ease through integrated contact forms.'
     },
     {
-      icon: FiUsers,
+      icon: "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
       title: 'Volunteer Sign-Up',
       description: 'Gather volunteer information with built-in forms that connect directly to your team.'
     },
     {
-      icon: FiDollarSign,
+      icon: "https://cdn-icons-png.flaticon.com/512/2830/2830284.png",
       title: 'Donation Buttons',
       description: 'Accept contributions in preset amounts or custom values with secure payment integration.'
     }
@@ -145,7 +139,11 @@ const LandingPage = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <img src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" alt="NPO Bots Logo" className="h-16 w-auto" />
+              <img
+                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png"
+                alt="NPO Bots Logo"
+                className="h-16 w-auto"
+              />
             </motion.div>
             <div className="flex items-center space-x-4">
               <motion.button
@@ -157,7 +155,11 @@ const LandingPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <SafeIcon icon={FiLogIn} className="text-gray-600" />
+                <SafeIcon 
+                  src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" 
+                  alt="Login"
+                  className="w-4 h-4"
+                />
                 <span>Log In</span>
               </motion.button>
               <motion.button
@@ -192,6 +194,7 @@ const LandingPage = () => {
           </video>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/70 to-indigo-900/80"></div>
         </div>
+        
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <motion.h1
@@ -227,13 +230,21 @@ const LandingPage = () => {
                 className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
                 <span>Get Started</span>
-                <SafeIcon icon={FiArrowRight} />
+                <SafeIcon 
+                  src="https://cdn-icons-png.flaticon.com/512/271/271228.png" 
+                  alt="Arrow Right"
+                  className="w-5 h-5"
+                />
               </button>
               <button
                 onClick={handleWatchDemo}
                 className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
-                <SafeIcon icon={FiYoutube} className="text-red-400" />
+                <SafeIcon 
+                  src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" 
+                  alt="YouTube"
+                  className="w-5 h-5"
+                />
                 <span>Watch Demo</span>
               </button>
             </motion.div>
@@ -243,7 +254,11 @@ const LandingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <SafeIcon icon={FiMessageCircle} className="text-sm" />
+              <SafeIcon 
+                src="https://cdn-icons-png.flaticon.com/512/1370/1370907.png" 
+                alt="Chat"
+                className="w-4 h-4"
+              />
               <span>Try our interactive demo chatbot in the bottom right corner!</span>
             </motion.div>
           </div>
@@ -274,7 +289,11 @@ const LandingPage = () => {
                 transition={{ delay: index * 0.1 }}
               >
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <SafeIcon icon={feature.icon} className="text-blue-600 text-2xl" />
+                  <SafeIcon 
+                    src={feature.icon} 
+                    alt={feature.title}
+                    className="w-8 h-8"
+                  />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{feature.description}</p>
@@ -289,6 +308,9 @@ const LandingPage = () => {
 
       {/* Pricing Section */}
       <PricingSection />
+
+      {/* Veteran-Owned Section - NEW */}
+      <VeteranOwnedSection />
 
       {/* Contact Section - Added below pricing */}
       <ContactSection />
@@ -326,17 +348,21 @@ const LandingPage = () => {
                 {authMode === 'login' ? 'Welcome Back' : 'Get Started with NPO Bots'}
               </h3>
               <p className="text-gray-600">
-                {authMode === 'login'
-                  ? 'Sign in to your account'
-                  : 'Create your account to start building chatbots'}
+                {authMode === 'login' ? 'Sign in to your account' : 'Create your account to start building chatbots'}
               </p>
             </div>
+
             {authError && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-                <SafeIcon icon={FiAlertCircle} className="text-red-600" />
+                <SafeIcon 
+                  src="https://cdn-icons-png.flaticon.com/512/564/564619.png" 
+                  alt="Error"
+                  className="w-5 h-5"
+                />
                 <span className="text-red-800">{authError}</span>
               </div>
             )}
+
             <form onSubmit={handleAuth} className="space-y-4">
               {authMode === 'signup' && (
                 <>
@@ -345,7 +371,11 @@ const LandingPage = () => {
                       Full Name
                     </label>
                     <div className="relative">
-                      <SafeIcon icon={FiUser} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <SafeIcon 
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" 
+                        alt="User"
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
+                      />
                       <input
                         type="text"
                         value={formData.name}
@@ -375,7 +405,11 @@ const LandingPage = () => {
                   Email Address
                 </label>
                 <div className="relative">
-                  <SafeIcon icon={FiMail} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <SafeIcon 
+                    src="https://cdn-icons-png.flaticon.com/512/732/732200.png" 
+                    alt="Email"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
+                  />
                   <input
                     type="email"
                     value={formData.email}
@@ -391,7 +425,11 @@ const LandingPage = () => {
                   Password
                 </label>
                 <div className="relative">
-                  <SafeIcon icon={FiLock} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <SafeIcon 
+                    src="https://cdn-icons-png.flaticon.com/512/159/159478.png" 
+                    alt="Lock"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
+                  />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
@@ -400,15 +438,23 @@ const LandingPage = () => {
                     placeholder="Enter your password"
                     required
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
                   >
-                    <SafeIcon icon={showPassword ? FiEyeOff : FiEye} className="text-lg" />
+                    <SafeIcon 
+                      src={showPassword 
+                        ? "https://cdn-icons-png.flaticon.com/512/709/709612.png"
+                        : "https://cdn-icons-png.flaticon.com/512/709/709586.png"
+                      } 
+                      alt={showPassword ? "Hide Password" : "Show Password"}
+                      className="w-5 h-5"
+                    />
                   </button>
                 </div>
               </div>
+
               {/* Forgot Password Link - Only show on login */}
               {authMode === 'login' && (
                 <div className="text-right">
@@ -421,6 +467,7 @@ const LandingPage = () => {
                   </button>
                 </div>
               )}
+
               <div className="flex space-x-4">
                 <button
                   type="submit"
@@ -437,6 +484,7 @@ const LandingPage = () => {
                 </button>
               </div>
             </form>
+
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 {authMode === 'login' ? "Don't have an account?" : "Already have an account?"}
@@ -466,13 +514,22 @@ const LandingPage = () => {
                 onClick={closeForgotPasswordModal}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <SafeIcon icon={FiX} className="text-xl" />
+                <SafeIcon 
+                  src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" 
+                  alt="Close"
+                  className="w-6 h-6"
+                />
               </button>
             </div>
+
             {forgotPasswordStatus === 'success' ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <SafeIcon icon={FiCheckCircle} className="text-green-600 text-2xl" />
+                  <SafeIcon 
+                    src="https://cdn-icons-png.flaticon.com/512/190/190411.png" 
+                    alt="Success"
+                    className="w-8 h-8"
+                  />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">
                   Check Your Email
@@ -492,21 +549,31 @@ const LandingPage = () => {
                 <p className="text-gray-600 mb-6">
                   Enter your email address and we'll send you a link to reset your password.
                 </p>
+
                 {forgotPasswordStatus === 'error' && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-                    <SafeIcon icon={FiAlertCircle} className="text-red-600" />
+                    <SafeIcon 
+                      src="https://cdn-icons-png.flaticon.com/512/564/564619.png" 
+                      alt="Error"
+                      className="w-5 h-5"
+                    />
                     <span className="text-red-800">
                       Failed to send reset email. Please try again.
                     </span>
                   </div>
                 )}
+
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Email Address
                     </label>
                     <div className="relative">
-                      <SafeIcon icon={FiMail} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <SafeIcon 
+                        src="https://cdn-icons-png.flaticon.com/512/732/732200.png" 
+                        alt="Email"
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
+                      />
                       <input
                         type="email"
                         value={forgotPasswordEmail}
