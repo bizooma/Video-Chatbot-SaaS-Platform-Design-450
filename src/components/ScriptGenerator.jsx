@@ -1,37 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
+import { generateWidgetCode, createWidgetTestPage } from '../api/widgetApi';
 
 const { FiCode, FiCopy, FiCheck, FiExternalLink, FiSettings } = FiIcons;
 
 const ScriptGenerator = ({ chatbot }) => {
   const [copied, setCopied] = useState(false);
   const [scriptType, setScriptType] = useState('standard');
+  const [script, setScript] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const baseUrl = window.location.origin;
-  const scriptUrl = `${baseUrl}/widget.js`;
-  
-  const generateScript = () => {
-    const config = {
-      botId: chatbot.id,
-      apiUrl: `${baseUrl}/api/chatbot/${chatbot.id}`,
-      position: 'bottom-right',
-      theme: {
-        primaryColor: chatbot.theme?.primaryColor || '#3b82f6',
-        borderRadius: chatbot.theme?.borderRadius || '12px',
-        fontFamily: chatbot.theme?.fontFamily || 'Inter, sans-serif'
-      }
-    };
+  // Generate script when component mounts or when chatbot or script type changes
+  useEffect(() => {
+    const generateScript = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const result = await generateWidgetCode(chatbot.id, { 
+          type: scriptType,
+          // Use appropriate domain based on environment
+          scriptUrl: window.location.hostname === 'localhost' 
+            ? `${window.location.origin}/widget.js`
+            : `https://${window.location.hostname}/widget.js`
+        });
+        
+        setScript(result.code);
+      } catch (err) {
+        console.error('Failed to generate widget code:', err);
+        setError('Failed to generate embed code. Please try again.');
+        
+        // Fallback to client-side generation
+        const baseUrl = window.location.origin;
+        const scriptUrl = `${baseUrl}/widget.js`;
 
-    if (scriptType === 'standard') {
-      return `<!-- NPO Bots Widget -->
+        const config = {
+          botId: chatbot.id,
+          apiUrl: `${baseUrl}/api/chatbot/${chatbot.id}`,
+          position: 'bottom-right',
+          theme: {
+            primaryColor: chatbot.theme?.primaryColor || '#3b82f6',
+            borderRadius: chatbot.theme?.borderRadius || '12px',
+            fontFamily: chatbot.theme?.fontFamily || 'Inter, sans-serif'
+          }
+        };
+
+        if (scriptType === 'standard') {
+          setScript(`<!-- NPO Bots Widget -->
 <script>
   window.NPOBotsConfig = ${JSON.stringify(config, null, 2)};
 </script>
-<script src="${scriptUrl}" async></script>`;
-    } else if (scriptType === 'async') {
-      return `<!-- NPO Bots Widget (Async) -->
+<script src="${scriptUrl}" async></script>`);
+        } else if (scriptType === 'async') {
+          setScript(`<!-- NPO Bots Widget (Async) -->
 <script>
   (function() {
     window.NPOBotsConfig = ${JSON.stringify(config, null, 2)};
@@ -40,20 +64,26 @@ const ScriptGenerator = ({ chatbot }) => {
     script.async = true;
     document.head.appendChild(script);
   })();
-</script>`;
-    } else {
-      return `<!-- NPO Bots Widget (Custom) -->
+</script>`);
+        } else {
+          setScript(`<!-- NPO Bots Widget (Custom) -->
 <div id="npo-bots-widget" data-bot-id="${chatbot.id}"></div>
 <script>
   window.NPOBotsConfig = ${JSON.stringify(config, null, 2)};
 </script>
-<script src="${scriptUrl}" async></script>`;
-    }
-  };
+<script src="${scriptUrl}" async></script>`);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    generateScript();
+  }, [chatbot.id, scriptType, chatbot.theme]);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(generateScript());
+      await navigator.clipboard.writeText(script);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -61,8 +91,22 @@ const ScriptGenerator = ({ chatbot }) => {
     }
   };
 
-  const testScript = () => {
-    window.open(`${baseUrl}/test/${chatbot.id}`, '_blank');
+  const testScript = async () => {
+    try {
+      // Create a test page with the widget
+      const html = await createWidgetTestPage(chatbot.id);
+      
+      // Open in a new window
+      const testWindow = window.open('', '_blank');
+      testWindow.document.write(html);
+      testWindow.document.close();
+    } catch (err) {
+      console.error('Failed to create test page:', err);
+      
+      // Fallback - open a simpler test page
+      const testUrl = `${window.location.origin}/test/${chatbot.id}`;
+      window.open(testUrl, '_blank');
+    }
   };
 
   return (
@@ -112,18 +156,30 @@ const ScriptGenerator = ({ chatbot }) => {
           </label>
           <button
             onClick={copyToClipboard}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            disabled={isLoading}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
           >
             <SafeIcon icon={copied ? FiCheck : FiCopy} />
             <span>{copied ? 'Copied!' : 'Copy Code'}</span>
           </button>
         </div>
-        
         <div className="relative">
-          <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono">
-            <code>{generateScript()}</code>
-          </pre>
+          {isLoading ? (
+            <div className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono h-48 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
+              <span>Generating code...</span>
+            </div>
+          ) : (
+            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono">
+              <code>{script}</code>
+            </pre>
+          )}
         </div>
+        {error && (
+          <div className="mt-2 text-red-600 text-sm">
+            {error}
+          </div>
+        )}
       </div>
 
       {/* Installation Instructions */}
@@ -150,7 +206,7 @@ const ScriptGenerator = ({ chatbot }) => {
         <h4 className="font-semibold text-gray-900 mb-2">Advanced Configuration</h4>
         <div className="text-sm text-gray-600 space-y-1">
           <p>• Bot ID: <code className="bg-gray-200 px-2 py-1 rounded">{chatbot.id}</code></p>
-          <p>• API Endpoint: <code className="bg-gray-200 px-2 py-1 rounded">{baseUrl}/api/chatbot/{chatbot.id}</code></p>
+          <p>• API Endpoint: <code className="bg-gray-200 px-2 py-1 rounded">https://api.npobots.com/chatbot/{chatbot.id}</code></p>
           <p>• Updates: Real-time (changes reflect immediately)</p>
         </div>
       </div>

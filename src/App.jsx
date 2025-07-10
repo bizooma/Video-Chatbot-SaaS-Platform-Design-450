@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import ChatbotPreview from './components/ChatbotPreview';
 import ResetPassword from './components/ResetPassword';
 import FeedbackButton from './components/FeedbackButton';
+import WidgetTestPage from './pages/WidgetTestPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatbotProvider } from './contexts/ChatbotContext';
 import questConfig from './questConfig';
@@ -16,9 +17,9 @@ function App() {
   return (
     <AuthProvider>
       <ChatbotProvider>
-        <QuestProvider
-          apiKey={questConfig.APIKEY}
-          entityId={questConfig.ENTITYID}
+        <QuestProvider 
+          apiKey={questConfig.APIKEY} 
+          entityId={questConfig.ENTITYID} 
           apiType="PRODUCTION"
         >
           <Router>
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/preview/:botId" element={<ChatbotPreview />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/test/:botId" element={<WidgetTestPage />} />
               </Routes>
               <FeedbackButton />
             </div>

@@ -1,374 +1,346 @@
-import React,{useState,useEffect} from 'react';
-import {motion} from 'framer-motion';
-import {useNavigate} from 'react-router-dom';
-import {useAuth} from '../contexts/AuthContext';
-import {useChatbot} from '../contexts/ChatbotContext';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useChatbot } from '../contexts/ChatbotContext';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
-import VideoUpload from './VideoUpload';
 import ChatbotSettings from './ChatbotSettings';
 import ChatbotCustomization from './ChatbotCustomization';
-import ChatbotTraining from './ChatbotTraining';
+import VideoUpload from './VideoUpload';
+import EnhancedChatbotTraining from './EnhancedChatbotTraining';
 import ScriptGenerator from './ScriptGenerator';
 import AnalyticsDashboard from './AnalyticsDashboard';
-import ChatbotPreview from './ChatbotPreview';
-import AccountManagement from './AccountManagement';
 import VolunteerManagement from './VolunteerManagement';
-import {getVolunteers} from '../services/volunteerService';
+import AccountManagement from './AccountManagement';
+import { getVolunteers } from '../services/volunteerService';
+// Import analytics
+import { trackPageView, trackChatbotCreated } from '../utils/analytics';
 
-const {FiUser,FiSettings,FiVideo,FiMessageCircle,FiCode,FiBarChart3,FiEye,FiLogOut,FiPlus,FiPalette,FiUsers,FiBrain}=FiIcons;
+const {
+  FiPlus,
+  FiTrash2,
+  FiSettings,
+  FiEdit3,
+  FiVideo,
+  FiFileText,
+  FiCode,
+  FiPieChart,
+  FiUsers,
+  FiUser,
+  FiLock
+} = FiIcons;
 
-const Dashboard=()=> {
-  const [activeTab,setActiveTab]=useState('overview');
-  const {user,logout}=useAuth();
-  const {chatbots,selectedChatbot,setSelectedChatbot,createChatbot}=useChatbot();
-  const navigate=useNavigate();
-  const [volunteers,setVolunteers]=useState([]);
-  const [isLoadingVolunteers,setIsLoadingVolunteers]=useState(false);
+const Dashboard = () => {
+  const { user, logout } = useAuth();
+  const { chatbots, selectedChatbot, setSelectedChatbot, createChatbot, deleteChatbot } = useChatbot();
+  const [activeTab, setActiveTab] = useState('settings');
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [volunteers, setVolunteers] = useState([]);
+  const [isLoadingVolunteers, setIsLoadingVolunteers] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(()=> {
-    // Load volunteers data when dashboard mounts
+  // Track dashboard page view
+  useEffect(() => {
     if (user) {
-      loadVolunteers();
+      trackPageView('/dashboard', 'Dashboard');
     }
-  },[user]);
+  }, [user]);
 
-  const loadVolunteers=async ()=> {
-    if (!user) return;
-    try {
-      setIsLoadingVolunteers(true);
-      const volunteersData=await getVolunteers();
-      setVolunteers(volunteersData || []);
-    } catch (error) {
-      console.error('Failed to load volunteers:',error);
-    } finally {
-      setIsLoadingVolunteers(false);
-    }
-  };
+  // Load volunteers for selected chatbot
+  useEffect(() => {
+    const loadVolunteers = async () => {
+      if (selectedChatbot) {
+        setIsLoadingVolunteers(true);
+        try {
+          const data = await getVolunteers(selectedChatbot.id);
+          setVolunteers(data);
+        } catch (error) {
+          console.error('Failed to load volunteers:', error);
+        } finally {
+          setIsLoadingVolunteers(false);
+        }
+      }
+    };
+    
+    loadVolunteers();
+  }, [selectedChatbot]);
 
-  const handleLogout=()=> {
-    logout();
-    navigate('/');
-  };
-
-  const handleCreateBot=()=> {
-    const newBot=createChatbot({
+  // Handle chatbot creation
+  const handleCreateBot = () => {
+    const newBot = createChatbot({
       name: `Chatbot ${chatbots.length + 1}`,
       welcomeMessage: 'Hello! How can I help you today?',
       email: user?.email || 'support@example.com',
       phone: '+1 (555) 123-4567'
     });
     setSelectedChatbot(newBot);
+    
+    // Track chatbot creation
+    trackChatbotCreated('basic');
   };
 
-  const tabs=[ 
-    {id: 'overview',label: 'Overview',icon: FiSettings},
-    {id: 'video',label: 'Video Upload',icon: FiVideo},
-    {id: 'settings',label: 'Bot Settings',icon: FiMessageCircle},
-    {id: 'training',label: 'AI Training',icon: FiBrain},
-    {id: 'customization',label: 'Customization',icon: FiPalette},
-    {id: 'script',label: 'Integration',icon: FiCode},
-    {id: 'analytics',label: 'Analytics',icon: FiBarChart3},
-    {id: 'volunteers',label: 'Volunteers',icon: FiUsers},
-    {id: 'preview',label: 'Preview',icon: FiEye},
-    {id: 'account',label: 'Account',icon: FiUser}
+  // Handle chatbot deletion
+  const handleDeleteBot = () => {
+    if (selectedChatbot) {
+      deleteChatbot(selectedChatbot.id);
+      setShowConfirmDelete(false);
+    }
+  };
+
+  // Handle volunteer data refresh
+  const handleRefreshVolunteers = async () => {
+    if (selectedChatbot) {
+      setIsLoadingVolunteers(true);
+      try {
+        const data = await getVolunteers(selectedChatbot.id);
+        setVolunteers(data);
+      } catch (error) {
+        console.error('Failed to refresh volunteers:', error);
+      } finally {
+        setIsLoadingVolunteers(false);
+      }
+    }
+  };
+
+  // Dashboard tabs
+  const tabs = [
+    { id: 'settings', label: 'Settings', icon: FiSettings },
+    { id: 'appearance', label: 'Appearance', icon: FiEdit3 },
+    { id: 'video', label: 'Video', icon: FiVideo },
+    { id: 'training', label: 'AI Training', icon: FiFileText, premium: true },
+    { id: 'script', label: 'Integration', icon: FiCode },
+    { id: 'analytics', label: 'Analytics', icon: FiPieChart, premium: true },
+    { id: 'volunteers', label: 'Volunteers', icon: FiUsers },
+    { id: 'account', label: 'Account', icon: FiUser }
   ];
 
+  // Redirect to login if no user
   if (!user) {
     navigate('/');
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100 pb-12">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <img
-                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png"
-                alt="NPO Bots Logo"
-                className="h-14 w-auto"
+              <img 
+                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" 
+                alt="NPO Bots Logo" 
+                className="h-10 w-auto" 
               />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">NPO Bots Dashboard</h1>
-                <p className="text-sm text-gray-600">Welcome back,{user.name}</p>
-              </div>
+              <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <SafeIcon icon={FiUser} className="text-gray-500" />
-                <span className="text-sm text-gray-700">{user.email}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+            <div>
+              <span className="mr-4 text-sm text-gray-600">
+                {user.email} - <span className="capitalize">{user.plan || 'free'} Plan</span>
+              </span>
+              <button 
+                onClick={logout}
+                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
-                <SafeIcon icon={FiLogOut} className="text-xl" />
+                Sign Out
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
+            {/* Chatbot Selection */}
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Your Chatbots</h3>
-                <button
-                  onClick={handleCreateBot}
-                  className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <SafeIcon icon={FiPlus} className="text-sm" />
-                </button>
-              </div>
-              <div className="space-y-2">
-                {chatbots.length===0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <SafeIcon icon={FiMessageCircle} className="text-4xl mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No chatbots yet</p>
-                    <p className="text-xs">Click + to create your first one</p>
-                  </div>
+              <h2 className="text-lg font-bold text-gray-900 mb-4">Your Chatbots</h2>
+              
+              {/* Chatbot List */}
+              <div className="space-y-3 mb-4">
+                {chatbots.length === 0 ? (
+                  <p className="text-gray-500 text-sm">No chatbots yet. Create your first one!</p>
                 ) : (
-                  chatbots.map((bot)=> (
+                  chatbots.map((bot) => (
                     <button
                       key={bot.id}
-                      onClick={()=> setSelectedChatbot(bot)}
-                      className={`w-full text-left p-3 rounded-lg transition-colors ${
-                        selectedChatbot?.id===bot.id
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'text-gray-700 hover:bg-gray-50'
+                      onClick={() => setSelectedChatbot(bot)}
+                      className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between ${
+                        selectedChatbot?.id === bot.id
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-50 text-gray-800 hover:bg-gray-100'
                       }`}
                     >
-                      <div className="font-medium">{bot.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {bot.video ? 'Video configured' : 'No video'}
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full ${bot.isAiTrained ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                        <span className="font-medium truncate">{bot.name}</span>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {bot.isAiTrained ? '🧠 AI Trained' : '⚙️ Basic'}
-                      </div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        ID: {bot.id}
-                      </div>
+                      {selectedChatbot?.id === bot.id && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowConfirmDelete(true);
+                          }}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                          title="Delete chatbot"
+                        >
+                          <SafeIcon icon={FiTrash2} className="text-sm" />
+                        </button>
+                      )}
                     </button>
                   ))
                 )}
               </div>
+              
+              {/* Create New Chatbot Button */}
+              <button
+                onClick={handleCreateBot}
+                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+              >
+                <SafeIcon icon={FiPlus} />
+                <span>Create New Chatbot</span>
+              </button>
             </div>
-
+            
             {/* Navigation */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
-              <nav className="space-y-2">
-                {tabs.map((tab)=> (
-                  <button
-                    key={tab.id}
-                    onClick={()=> setActiveTab(tab.id)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                      activeTab===tab.id
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <SafeIcon icon={tab.icon} className="text-lg" />
-                    <span className="font-medium">{tab.label}</span>
-                    {tab.id === 'training' && selectedChatbot?.isAiTrained && (
-                      <span className="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                        Trained
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </nav>
+            {selectedChatbot && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Navigation</h2>
+                <nav className="space-y-1">
+                  {tabs.map((tab) => {
+                    const isPremiumLocked = tab.premium && user.plan === 'free';
+                    
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        disabled={isPremiumLocked}
+                        className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between ${
+                          activeTab === tab.id
+                            ? 'bg-blue-100 text-blue-800'
+                            : isPremiumLocked
+                            ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-800 hover:bg-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <SafeIcon icon={tab.icon} />
+                          <span className="font-medium">{tab.label}</span>
+                        </div>
+                        {isPremiumLocked && (
+                          <SafeIcon icon={FiLock} className="text-gray-400 text-sm" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
+            )}
+            
+            {/* Plan Info */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-sm p-6 text-white">
+              <h2 className="text-lg font-bold mb-2">
+                {user.plan === 'free' ? 'Free Plan' : 'Pro Plan'}
+              </h2>
+              <p className="text-blue-100 mb-4">
+                {user.plan === 'free' 
+                  ? 'Upgrade to access AI Training and Analytics' 
+                  : 'You have access to all premium features'}
+              </p>
+              {user.plan === 'free' && (
+                <button
+                  onClick={() => window.location.hash = '#pricing'}
+                  className="w-full bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                >
+                  Upgrade Now
+                </button>
+              )}
             </div>
           </div>
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <motion.div
-              key={activeTab}
-              initial={{opacity: 0,y: 20}}
-              animate={{opacity: 1,y: 0}}
-              transition={{duration: 0.3}}
-            >
-              {activeTab==='overview' && (
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-blue-50 rounded-lg p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-blue-600 font-medium">Active Chatbots</p>
-                          <p className="text-3xl font-bold text-blue-900">{chatbots.length}</p>
-                        </div>
-                        <SafeIcon icon={FiMessageCircle} className="text-blue-500 text-2xl" />
-                      </div>
-                    </div>
-                    <div className="bg-green-50 rounded-lg p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-green-600 font-medium">AI Trained Bots</p>
-                          <p className="text-3xl font-bold text-green-900">
-                            {chatbots.filter(bot=> bot.isAiTrained).length}
-                          </p>
-                        </div>
-                        <SafeIcon icon={FiBrain} className="text-green-500 text-2xl" />
-                      </div>
-                    </div>
-                    <div className="bg-purple-50 rounded-lg p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-purple-600 font-medium">Volunteers</p>
-                          <p className="text-3xl font-bold text-purple-900">{volunteers.length}</p>
-                        </div>
-                        <SafeIcon icon={FiUsers} className="text-purple-500 text-2xl" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {chatbots.length===0 ? (
-                    <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
-                      <SafeIcon icon={FiMessageCircle} className="text-6xl text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Create Your First Chatbot</h3>
-                      <p className="text-gray-600 mb-6">Get started by creating a new chatbot to engage with your supporters</p>
-                      <button
-                        onClick={handleCreateBot}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 mx-auto"
-                      >
-                        <SafeIcon icon={FiPlus} />
-                        <span>Create Chatbot</span>
-                      </button>
-                    </div>
-                  ) : selectedChatbot && (
-                    <div className="border-t pt-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        Selected Bot: {selectedChatbot.name}
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center space-x-3">
-                          <SafeIcon icon={FiVideo} className="text-gray-500" />
-                          <span className="text-gray-700">
-                            Video: {selectedChatbot.video ? 'Configured' : 'Not configured'}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <SafeIcon icon={FiBrain} className="text-gray-500" />
-                          <span className="text-gray-700">
-                            AI Training: {selectedChatbot.isAiTrained ? 'Trained' : 'Not trained'}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <SafeIcon icon={FiCode} className="text-gray-500" />
-                          <span className="text-gray-700">
-                            Script: Ready for integration
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <SafeIcon icon={FiPalette} className="text-gray-500" />
-                          <span className="text-gray-700">
-                            Theme: {selectedChatbot.theme?.primaryColor || 'Default'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Training Status */}
-                      {selectedChatbot.trainingData?.status === 'trained' && (
-                        <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <SafeIcon icon={FiBrain} className="text-green-600" />
-                            <h4 className="font-medium text-green-900">AI Training Complete</h4>
-                          </div>
-                          <div className="text-sm text-green-700 space-y-1">
-                            <p>📄 Documents: {selectedChatbot.trainingData.documents?.length || 0}</p>
-                            <p>🌐 Websites: {selectedChatbot.trainingData.urls?.length || 0}</p>
-                            <p>❓ FAQs: {selectedChatbot.trainingData.faqs?.length || 0}</p>
-                            <p>📅 Last trained: {new Date(selectedChatbot.trainingData.lastTrained).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+            {!selectedChatbot ? (
+              <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <SafeIcon icon={FiPlus} className="text-blue-600 text-2xl" />
                 </div>
-              )}
-
-              {activeTab==='video' && selectedChatbot && (
-                <VideoUpload chatbot={selectedChatbot} />
-              )}
-
-              {activeTab==='settings' && selectedChatbot && (
-                <ChatbotSettings chatbot={selectedChatbot} />
-              )}
-
-              {activeTab==='training' && selectedChatbot && (
-                <ChatbotTraining chatbot={selectedChatbot} />
-              )}
-
-              {activeTab==='customization' && selectedChatbot && (
-                <ChatbotCustomization chatbot={selectedChatbot} />
-              )}
-
-              {activeTab==='script' && selectedChatbot && (
-                <ScriptGenerator chatbot={selectedChatbot} />
-              )}
-
-              {activeTab==='analytics' && selectedChatbot && (
-                <AnalyticsDashboard chatbot={selectedChatbot} />
-              )}
-
-              {activeTab==='volunteers' && (
-                <VolunteerManagement 
-                  volunteers={volunteers} 
-                  isLoading={isLoadingVolunteers} 
-                  onRefresh={loadVolunteers} 
-                />
-              )}
-
-              {activeTab==='preview' && selectedChatbot && (
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Chatbot Preview</h2>
-                  <div className="text-center mb-6">
-                    <p className="text-gray-600">
-                      This is how your chatbot will appear on your website
-                    </p>
-                    {selectedChatbot.isAiTrained && (
-                      <div className="mt-2 inline-flex items-center space-x-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                        <SafeIcon icon={FiBrain} />
-                        <span>AI-Powered Responses Enabled</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-center">
-                    <ChatbotPreview chatbot={selectedChatbot} />
-                  </div>
-                </div>
-              )}
-
-              {activeTab==='account' && (
-                <AccountManagement />
-              )}
-
-              {/* Show message when no chatbot is selected */}
-              {!selectedChatbot && activeTab !=='overview' && activeTab !=='account' && activeTab !=='volunteers' && (
-                <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                  <SafeIcon icon={FiMessageCircle} className="text-6xl text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Chatbot Selected</h3>
-                  <p className="text-gray-600 mb-6">Please select a chatbot from the sidebar or create a new one</p>
-                  <button
-                    onClick={handleCreateBot}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 mx-auto"
-                  >
-                    <SafeIcon icon={FiPlus} />
-                    <span>Create Chatbot</span>
-                  </button>
-                </div>
-              )}
-            </motion.div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  Create Your First Chatbot
+                </h2>
+                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                  Start by creating a chatbot for your organization. You'll be able to customize it, add videos, and train it with your content.
+                </p>
+                <button
+                  onClick={handleCreateBot}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Create Chatbot
+                </button>
+              </div>
+            ) : (
+              <>
+                {activeTab === 'settings' && (
+                  <ChatbotSettings chatbot={selectedChatbot} />
+                )}
+                {activeTab === 'appearance' && (
+                  <ChatbotCustomization chatbot={selectedChatbot} />
+                )}
+                {activeTab === 'video' && (
+                  <VideoUpload chatbot={selectedChatbot} />
+                )}
+                {activeTab === 'training' && (
+                  <EnhancedChatbotTraining chatbot={selectedChatbot} />
+                )}
+                {activeTab === 'script' && (
+                  <ScriptGenerator chatbot={selectedChatbot} />
+                )}
+                {activeTab === 'analytics' && (
+                  <AnalyticsDashboard chatbot={selectedChatbot} />
+                )}
+                {activeTab === 'volunteers' && (
+                  <VolunteerManagement 
+                    volunteers={volunteers} 
+                    isLoading={isLoadingVolunteers} 
+                    onRefresh={handleRefreshVolunteers} 
+                  />
+                )}
+                {activeTab === 'account' && (
+                  <AccountManagement />
+                )}
+              </>
+            )}
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* Delete Confirmation Modal */}
+      {showConfirmDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Chatbot?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete "{selectedChatbot.name}"? This action cannot be undone.
+            </p>
+            <div className="flex space-x-4">
+              <button
+                onClick={handleDeleteBot}
+                className="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setShowConfirmDelete(false)}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
