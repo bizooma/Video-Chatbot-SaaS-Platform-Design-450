@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
-import DemoChatbot from './DemoChatbot';
 import PricingSection from './PricingSection';
 import VeteranOwnedSection from './VeteranOwnedSection';
 import OptimizedFAQSection from './OptimizedFAQSection';
 import ContactSection from './ContactSection';
 import SEOHead from './SEOHead';
 import VoiceSEOContent from './VoiceSEOContent';
+import ChatbotWidget from './ChatbotWidget';
 
 const OptimizedLandingPage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -28,6 +29,11 @@ const OptimizedLandingPage = () => {
 
   const { login, signup, authError, resetPassword } = useAuth();
   const navigate = useNavigate();
+
+  // Track page view on component mount
+  useEffect(() => {
+    // Track page view logic here
+  }, []);
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -50,7 +56,6 @@ const OptimizedLandingPage = () => {
     e.preventDefault();
     setIsSubmittingForgotPassword(true);
     setForgotPasswordStatus('');
-
     try {
       await resetPassword(forgotPasswordEmail);
       setForgotPasswordStatus('success');
@@ -102,9 +107,32 @@ const OptimizedLandingPage = () => {
     setShowPassword(!showPassword);
   };
 
+  // Demo chatbot configuration with the correct YouTube video
+  const chatbotConfig = {
+    name: "NPO Bots Support",
+    welcomeMessage: "Hi there! 👋 I'm here to help you learn more about NPO Bots. How can I assist you today?",
+    video: "https://www.youtube.com/embed/g1wVgV58JbE?autoplay=0&controls=1&rel=0&modestbranding=1",
+    videoType: "youtube", // Flag to indicate this is a YouTube video
+    theme: {
+      primaryColor: "#3b82f6",
+      textColor: "#ffffff",
+      backgroundColor: "#ffffff",
+      secondaryColor: "#f3f4f6"
+    },
+    chatEnabled: true,
+    emailEnabled: true,
+    phoneEnabled: true,
+    volunteerEnabled: true,
+    donationEnabled: true,
+    donationAmounts: [25, 50, 100, 250],
+    email: "joe@bizooma.com",
+    phone: "8453779730",
+    position: "bottom-right"
+  };
+
   const features = [
     {
-      icon: "https://cdn-icons-png.flaticon.com/512/1370/1370907.png",
+      icon: FiIcons.FiMessageCircle,
       title: 'Chat Window',
       description: 'Chat with an AI agent for 24/7 support, answering common questions and guiding visitors through your mission.',
       schema: {
@@ -114,7 +142,7 @@ const OptimizedLandingPage = () => {
       }
     },
     {
-      icon: "https://cdn-icons-png.flaticon.com/512/1179/1179069.png",
+      icon: FiIcons.FiVideo,
       title: 'Intro Video',
       description: 'Greet visitors with a compelling video that shares your mission and creates emotional connection.',
       schema: {
@@ -124,7 +152,7 @@ const OptimizedLandingPage = () => {
       }
     },
     {
-      icon: "https://cdn-icons-png.flaticon.com/512/159/159832.png",
+      icon: FiIcons.FiPhone,
       title: 'Click-to-Call',
       description: 'One tap and supporters are connected with your team for immediate personal engagement.',
       schema: {
@@ -134,7 +162,7 @@ const OptimizedLandingPage = () => {
       }
     },
     {
-      icon: "https://cdn-icons-png.flaticon.com/512/732/732200.png",
+      icon: FiIcons.FiMail,
       title: 'Email Button',
       description: 'Collect questions, stories, or support requests with ease through integrated contact forms.',
       schema: {
@@ -144,7 +172,7 @@ const OptimizedLandingPage = () => {
       }
     },
     {
-      icon: "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
+      icon: FiIcons.FiUsers,
       title: 'Volunteer Sign-Up',
       description: 'Gather volunteer information with built-in forms that connect directly to your team.',
       schema: {
@@ -154,7 +182,7 @@ const OptimizedLandingPage = () => {
       }
     },
     {
-      icon: "https://cdn-icons-png.flaticon.com/512/2830/2830284.png",
+      icon: FiIcons.FiHeart,
       title: 'Donation Buttons',
       description: 'Accept contributions in preset amounts or custom values with secure payment integration.',
       schema: {
@@ -169,7 +197,7 @@ const OptimizedLandingPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* SEO Head Component */}
       <SEOHead />
-      
+
       {/* Voice Search Optimization */}
       <VoiceSEOContent />
 
@@ -177,19 +205,20 @@ const OptimizedLandingPage = () => {
       <header className="bg-white shadow-sm relative z-10" role="banner">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <motion.div 
+            <motion.div
               className="flex items-center space-x-2"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <img 
-                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png" 
-                alt="NPO Bots Logo - AI Chatbots for Nonprofits" 
+              <img
+                src="https://quest-media-storage-bucket.s3.us-east-2.amazonaws.com/1752002958443-npobots-logo.png"
+                alt="NPO Bots Logo - AI Chatbots for Nonprofits"
                 className="h-16 w-auto"
                 width="200"
                 height="64"
               />
             </motion.div>
+
             <nav role="navigation" aria-label="Main navigation">
               <div className="flex items-center space-x-4">
                 <motion.button
@@ -202,13 +231,10 @@ const OptimizedLandingPage = () => {
                   whileTap={{ scale: 0.95 }}
                   aria-label="Log in to your account"
                 >
-                  <SafeIcon 
-                    src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" 
-                    alt="" 
-                    className="w-4 h-4" 
-                  />
+                  <SafeIcon icon={FiIcons.FiLogIn} className="w-4 h-4" />
                   <span>Log In</span>
                 </motion.button>
+
                 <motion.button
                   onClick={() => {
                     setAuthMode('signup');
@@ -230,18 +256,18 @@ const OptimizedLandingPage = () => {
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden" role="main" aria-labelledby="hero-heading">
         <div className="absolute inset-0 w-full h-full">
-          <video 
-            className="w-full h-full object-cover" 
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
             poster="https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
             aria-hidden="true"
           >
-            <source 
-              src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=139&oauth2_token_id=57447761" 
-              type="video/mp4" 
+            <source
+              src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=139&oauth2_token_id=57447761"
+              type="video/mp4"
             />
             <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-800"></div>
           </video>
@@ -250,7 +276,7 @@ const OptimizedLandingPage = () => {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <motion.h1 
+            <motion.h1
               id="hero-heading"
               className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
               initial={{ opacity: 0, y: 20 }}
@@ -262,8 +288,8 @@ const OptimizedLandingPage = () => {
                 Smart Nonprofit Chatbot
               </span>
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto drop-shadow-md"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -272,8 +298,8 @@ const OptimizedLandingPage = () => {
               Turn website visitors into volunteers, donors, and advocates—24/7
             </motion.p>
 
-            <motion.div 
-              className="flex justify-center space-x-4"
+            <motion.div
+              className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -283,42 +309,30 @@ const OptimizedLandingPage = () => {
                   setAuthMode('signup');
                   setIsAuthModalOpen(true);
                 }}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
                 aria-label="Start your free trial"
               >
                 <span>Get Started</span>
-                <SafeIcon 
-                  src="https://cdn-icons-png.flaticon.com/512/271/271228.png" 
-                  alt="" 
-                  className="w-5 h-5" 
-                />
+                <SafeIcon icon={FiIcons.FiArrowRight} className="w-5 h-5" />
               </button>
-              
+
               <button
                 onClick={handleWatchDemo}
-                className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                className="backdrop-blur-sm bg-white/10 border border-white/20 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
                 aria-label="Watch demo video"
               >
-                <SafeIcon 
-                  src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" 
-                  alt="" 
-                  className="w-5 h-5" 
-                />
+                <SafeIcon icon={FiIcons.FiPlay} className="w-5 h-5" />
                 <span>Watch Demo</span>
               </button>
             </motion.div>
 
-            <motion.div 
-              className="mt-8 inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 rounded-full text-sm font-medium"
+            <motion.div
+              className="mt-8 inline-flex items-center space-x-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white px-4 py-2 rounded-full text-sm font-medium"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <SafeIcon 
-                src="https://cdn-icons-png.flaticon.com/512/1370/1370907.png" 
-                alt="" 
-                className="w-4 h-4" 
-              />
+              <SafeIcon icon={FiIcons.FiMessageCircle} className="w-4 h-4" />
               <span>Try our interactive demo chatbot in the bottom right corner!</span>
             </motion.div>
           </div>
@@ -336,7 +350,9 @@ const OptimizedLandingPage = () => {
               AI Chatbots Built for Nonprofits. No Coding Required.
             </h3>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              NPOBots is a simple, powerful SaaS platform that lets your nonprofit launch a fully functional chatbot in minutes. Designed specifically for the nonprofit world, our chatbots come pre-loaded with everything you need to connect with supporters, increase donations, and grow your impact.
+              NPOBots is a simple, powerful SaaS platform that lets your nonprofit launch a fully functional chatbot in
+              minutes. Designed specifically for the nonprofit world, our chatbots come pre-loaded with everything you
+              need to connect with supporters, increase donations, and grow your impact.
             </p>
           </header>
 
@@ -352,11 +368,7 @@ const OptimizedLandingPage = () => {
                 itemType="https://schema.org/Service"
               >
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <SafeIcon 
-                    src={feature.icon} 
-                    alt={`${feature.title} icon`} 
-                    className="w-8 h-8" 
-                  />
+                  <SafeIcon icon={feature.icon} className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3" itemProp="name">
                   {feature.title}
@@ -388,9 +400,9 @@ const OptimizedLandingPage = () => {
           <div className="text-center">
             <p className="text-gray-400 text-sm">
               © 2025{' '}
-              <a 
-                href="https://bizooma.com" 
-                target="_blank" 
+              <a
+                href="https://bizooma.com"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:text-blue-300 transition-colors"
               >
@@ -405,7 +417,7 @@ const OptimizedLandingPage = () => {
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <motion.div 
+          <motion.div
             className="bg-white rounded-xl p-8 max-w-md w-full mx-4"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -415,17 +427,15 @@ const OptimizedLandingPage = () => {
                 {authMode === 'login' ? 'Welcome Back' : 'Get Started with NPO Bots'}
               </h3>
               <p className="text-gray-600">
-                {authMode === 'login' ? 'Sign in to your account' : 'Create your account to start building chatbots'}
+                {authMode === 'login'
+                  ? 'Sign in to your account'
+                  : 'Create your account to start building chatbots'}
               </p>
             </div>
 
             {authError && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-                <SafeIcon 
-                  src="https://cdn-icons-png.flaticon.com/512/564/564619.png" 
-                  alt="Error" 
-                  className="w-5 h-5" 
-                />
+                <SafeIcon icon={FiIcons.FiAlertCircle} className="w-5 h-5 text-red-500" />
                 <span className="text-red-800">{authError}</span>
               </div>
             )}
@@ -434,19 +444,16 @@ const OptimizedLandingPage = () => {
               {authMode === 'signup' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                     <div className="relative">
-                      <SafeIcon 
-                        src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" 
-                        alt="User" 
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" 
+                      <SafeIcon
+                        icon={FiIcons.FiUser}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                       />
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Enter your full name"
                         required
@@ -454,13 +461,11 @@ const OptimizedLandingPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Organization (Optional)
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Organization (Optional)</label>
                     <input
                       type="text"
                       value={formData.company}
-                      onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, company: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Your organization name"
                     />
@@ -469,19 +474,16 @@ const OptimizedLandingPage = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                 <div className="relative">
-                  <SafeIcon 
-                    src="https://cdn-icons-png.flaticon.com/512/732/732200.png" 
-                    alt="Email" 
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" 
+                  <SafeIcon
+                    icon={FiIcons.FiMail}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                   />
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your email"
                     required
@@ -490,19 +492,16 @@ const OptimizedLandingPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                 <div className="relative">
-                  <SafeIcon 
-                    src="https://cdn-icons-png.flaticon.com/512/159/159478.png" 
-                    alt="Lock" 
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" 
+                  <SafeIcon
+                    icon={FiIcons.FiLock}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                   />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
-                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, password: e.target.value }))}
                     className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter your password"
                     required
@@ -512,13 +511,9 @@ const OptimizedLandingPage = () => {
                     onClick={togglePasswordVisibility}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
                   >
-                    <SafeIcon 
-                      src={showPassword 
-                        ? "https://cdn-icons-png.flaticon.com/512/709/709612.png" 
-                        : "https://cdn-icons-png.flaticon.com/512/709/709586.png"
-                      } 
-                      alt={showPassword ? "Hide Password" : "Show Password"} 
-                      className="w-5 h-5" 
+                    <SafeIcon
+                      icon={showPassword ? FiIcons.FiEyeOff : FiIcons.FiEye}
+                      className="w-5 h-5"
                     />
                   </button>
                 </div>
@@ -572,37 +567,24 @@ const OptimizedLandingPage = () => {
       {/* Forgot Password Modal */}
       {isForgotPasswordModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <motion.div 
+          <motion.div
             className="bg-white rounded-xl p-8 max-w-md w-full mx-4"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-gray-900">Reset Password</h3>
-              <button
-                onClick={closeForgotPasswordModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <SafeIcon 
-                  src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" 
-                  alt="Close" 
-                  className="w-6 h-6" 
-                />
+              <button onClick={closeForgotPasswordModal} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <SafeIcon icon={FiIcons.FiX} className="w-6 h-6" />
               </button>
             </div>
 
             {forgotPasswordStatus === 'success' ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <SafeIcon 
-                    src="https://cdn-icons-png.flaticon.com/512/190/190411.png" 
-                    alt="Success" 
-                    className="w-8 h-8" 
-                  />
+                  <SafeIcon icon={FiIcons.FiCheckCircle} className="w-8 h-8 text-green-500" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                  Check Your Email
-                </h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Check Your Email</h4>
                 <p className="text-gray-600 mb-6">
                   We've sent a password reset link to <strong>{forgotPasswordEmail}</strong>
                 </p>
@@ -621,27 +603,18 @@ const OptimizedLandingPage = () => {
 
                 {forgotPasswordStatus === 'error' && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-                    <SafeIcon 
-                      src="https://cdn-icons-png.flaticon.com/512/564/564619.png" 
-                      alt="Error" 
-                      className="w-5 h-5" 
-                    />
-                    <span className="text-red-800">
-                      Failed to send reset email. Please try again.
-                    </span>
+                    <SafeIcon icon={FiIcons.FiAlertCircle} className="w-5 h-5 text-red-500" />
+                    <span className="text-red-800">Failed to send reset email. Please try again.</span>
                   </div>
                 )}
 
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                     <div className="relative">
-                      <SafeIcon 
-                        src="https://cdn-icons-png.flaticon.com/512/732/732200.png" 
-                        alt="Email" 
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" 
+                      <SafeIcon
+                        icon={FiIcons.FiMail}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                       />
                       <input
                         type="email"
@@ -677,8 +650,8 @@ const OptimizedLandingPage = () => {
         </div>
       )}
 
-      {/* Demo Chatbot */}
-      <DemoChatbot />
+      {/* Chatbot Widget */}
+      <ChatbotWidget config={chatbotConfig} />
     </div>
   );
 };

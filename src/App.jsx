@@ -17,9 +17,9 @@ function App() {
   return (
     <AuthProvider>
       <ChatbotProvider>
-        <QuestProvider 
-          apiKey={questConfig.APIKEY} 
-          entityId={questConfig.ENTITYID} 
+        <QuestProvider
+          apiKey={questConfig.APIKEY}
+          entityId={questConfig.ENTITYID}
           apiType="PRODUCTION"
         >
           <Router>
